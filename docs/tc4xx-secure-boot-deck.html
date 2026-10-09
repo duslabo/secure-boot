@@ -1,0 +1,999 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TC4xx Secure Boot Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: one 1280x720 slide canvas scaled into a desk-coloured stage; stacked cards under 820px. */
+:root{
+  --paper:#f5f5f5; --paper-2:#ececec; --desk:#e4e5e8; --node:#ffffff;
+  --ink:#2d3142; --muted:#4f5d75; --soft:#6f7891;
+  --rule:rgba(45,49,66,.12); --rule-solid:#bfc0c0;
+  --accent:#eb6c36; --accent-text:#b4471a; --accent-tint:rgba(235,108,54,.08);
+  --accent-05:rgba(235,108,54,.05); --accent-50:rgba(235,108,54,.5);
+  --ink-02:rgba(45,49,66,.02); --ink-03:rgba(45,49,66,.03); --ink-05:rgba(45,49,66,.05);
+  --ink-10:rgba(45,49,66,.10); --ink-20:rgba(45,49,66,.20); --ink-30:rgba(45,49,66,.30);
+  --bar:#4f5d75;
+  --f-display:'Instrument Serif',Georgia,'Times New Roman',serif;
+  --f-sans:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'Geist Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#2d3142; --paper-2:#393e53; --desk:#22252f; --node:#353a4e;
+    --ink:#f5f5f5; --muted:#bfc0c0; --soft:#9aa3b6;
+    --rule:rgba(245,245,245,.12); --rule-solid:rgba(191,192,192,.25);
+    --accent:#f08a59; --accent-text:#f4a27a; --accent-tint:rgba(240,138,89,.10);
+    --accent-05:rgba(240,138,89,.06); --accent-50:rgba(240,138,89,.5);
+    --ink-02:rgba(245,245,245,.02); --ink-03:rgba(245,245,245,.03); --ink-05:rgba(245,245,245,.05);
+    --ink-10:rgba(245,245,245,.10); --ink-20:rgba(245,245,245,.20); --ink-30:rgba(245,245,245,.30);
+    --bar:#9aa3b6; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#2d3142; --paper-2:#393e53; --desk:#22252f; --node:#353a4e;
+  --ink:#f5f5f5; --muted:#bfc0c0; --soft:#9aa3b6;
+  --rule:rgba(245,245,245,.12); --rule-solid:rgba(191,192,192,.25);
+  --accent:#f08a59; --accent-text:#f4a27a; --accent-tint:rgba(240,138,89,.10);
+  --accent-05:rgba(240,138,89,.06); --accent-50:rgba(240,138,89,.5);
+  --ink-02:rgba(245,245,245,.02); --ink-03:rgba(245,245,245,.03); --ink-05:rgba(245,245,245,.05);
+  --ink-10:rgba(245,245,245,.10); --ink-20:rgba(245,245,245,.20); --ink-30:rgba(245,245,245,.30);
+  --bar:#9aa3b6; color-scheme:dark;
+}
+
+html,body{height:100%}
+body{background:var(--desk);color:var(--ink);font-family:var(--f-sans);margin:0;padding-inline:16px;overflow:hidden}
+.defs{position:absolute;width:0;height:0;overflow:hidden}
+.app{height:100%;display:flex;flex-direction:column;gap:12px;padding-block:12px;box-sizing:border-box}
+
+/* toolbar */
+.bar{position:relative;display:flex;align-items:center;gap:16px;font:500 12px var(--f-mono);color:var(--muted);padding-bottom:10px}
+.brand{letter-spacing:.14em;text-transform:uppercase;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ctr{font-variant-numeric:tabular-nums;color:var(--ink)}
+.btns{display:flex;gap:8px;flex:1;justify-content:flex-end}
+.bar button{font:500 12px var(--f-mono);color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:4px;padding:6px 12px;cursor:pointer}
+.bar button:hover{border-color:var(--muted)}
+.bar button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent-text)}
+.bar button:focus-visible,.slide input:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+kbd{font:inherit;color:var(--soft);margin-left:4px}
+.prog{position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--rule)}
+.prog span{display:block;height:100%;width:0;background:var(--accent);transition:width .25s ease}
+
+/* stage + deck */
+.stage{position:relative;flex:1;min-height:0}
+.deck{position:absolute;left:50%;top:50%;width:1280px;height:720px;transform-origin:50% 50%}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;box-sizing:border-box;padding:48px 64px 28px;background:var(--paper);border:1px solid var(--rule);border-radius:8px;overflow:hidden}
+.slide.active{display:flex}
+.slide .notes{display:none}
+
+/* type */
+.kicker,.mono{font:500 13px var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--soft);margin:0}
+h1,h2,h3{text-wrap:balance;font-weight:400;margin:0}
+h1{font:400 92px/1 var(--f-display);letter-spacing:-.01em;margin-top:20px}
+h2{font:400 44px/1.08 var(--f-display);margin-top:10px;max-width:1040px}
+h3{font:600 22px/1.25 var(--f-sans);margin:6px 0 6px}
+.lede{font:400 19px/1.5 var(--f-sans);color:var(--muted);margin:14px 0 0;max-width:860px}
+p{line-height:1.5}
+.s-head{flex:none;margin-bottom:24px}
+.s-body{flex:1;min-height:0;display:flex;flex-direction:column}
+.s-foot{flex:none;display:flex;justify-content:space-between;gap:16px;font:400 12px var(--f-mono);color:var(--soft);border-top:1px solid var(--rule);padding-top:12px;margin-top:16px;font-variant-numeric:tabular-nums}
+.note{font:400 14px/1.5 var(--f-sans);color:var(--soft);margin:0}
+
+/* figures */
+.fig{flex:1;min-height:0;min-width:0;display:flex;align-items:center;justify-content:center}
+.fig-svg{width:100%;height:100%;display:block}
+.fig-svg text{font-family:var(--f-sans)}
+.pm{fill:var(--paper)}
+.box{fill:var(--node);stroke:var(--ink);stroke-width:1}
+.focal{fill:var(--accent-tint);stroke:var(--accent);stroke-width:1.2}
+.store{fill:var(--ink-05);stroke:var(--muted);stroke-width:1}
+.ext{fill:var(--ink-03);stroke:var(--ink-30);stroke-width:1}
+.opt{fill:var(--ink-02);stroke:var(--ink-30);stroke-width:1;stroke-dasharray:4 3}
+.sec{fill:var(--accent-05);stroke:var(--accent-50);stroke-width:1;stroke-dasharray:4 4}
+.zone{fill:var(--ink-02);stroke:var(--ink-10);stroke-width:.8}
+.zone.sec-z{fill:var(--accent-05);stroke:var(--accent-50);stroke-dasharray:4 4}
+.ar{fill:none;stroke:var(--muted);stroke-width:1.2}
+.ar.acc{stroke:var(--accent)}
+.ar.dsh{stroke-dasharray:5 4;stroke-width:1.2}
+.mk-d{fill:var(--muted)} .mk-a{fill:var(--accent)}
+.mk{fill:var(--paper)}
+.hair{stroke:var(--rule);stroke-width:.8}
+.grid{stroke:var(--rule);stroke-width:.8}
+.base{stroke:var(--rule-solid);stroke-width:1}
+.ll{stroke:var(--ink-20);stroke-width:1;stroke-dasharray:4 4}
+.act{fill:var(--ink-10);stroke:var(--muted);stroke-width:.8}
+.frag{fill:none;stroke:var(--ink-30);stroke-width:1}
+.frag-tab{fill:var(--paper-2)}
+.bar-acc{fill:var(--accent)} .bar-m{fill:var(--bar)}
+.bar-est{fill:var(--ink-05);stroke:var(--muted);stroke-width:1;stroke-dasharray:4 3}
+.nm{font:600 16px var(--f-sans);fill:var(--ink)}
+.sl{font:400 12px var(--f-mono);fill:var(--muted)}
+.kk,.eb{font:500 12px var(--f-mono);letter-spacing:.14em;fill:var(--soft)}
+.al{font:400 12px var(--f-mono);letter-spacing:.06em;fill:var(--soft)}
+.al-acc{font:500 12px var(--f-mono);letter-spacing:.06em;fill:var(--accent-text)}
+.co{font:italic 400 16px var(--f-display);fill:var(--muted)}
+.lg{font:400 12px var(--f-mono);fill:var(--muted)}
+.tk{font:400 12px var(--f-mono);fill:var(--soft)}
+.val{font:600 16px var(--f-mono);fill:var(--ink)}
+
+/* title slide */
+.title-slide{justify-content:space-between}
+.t-top{max-width:980px}
+.title-slide .lede{font-size:21px;max-width:760px}
+.stats{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:0;border-top:1px solid var(--rule)}
+.stat{display:flex;flex-direction:column;gap:6px;padding:20px 24px 4px 0;border-right:1px solid var(--rule);margin-right:24px}
+.stat:last-child{border-right:0;margin-right:0}
+.stat .num{font:400 64px/1 var(--f-display);color:var(--ink);font-variant-numeric:tabular-nums}
+.stat .num small{font-size:28px;color:var(--muted)}
+.stat.acc .num{color:var(--accent-text)}
+.stat .cap{font-size:16px;color:var(--muted)}
+.stat .tag{font:500 11px var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--soft)}
+
+/* columns */
+.cols{flex:1;min-height:0;display:grid;gap:48px}
+.cols>*{min-width:0;min-height:0}
+.c-rec{grid-template-columns:1.25fr 1fr;align-items:start}
+.claims{display:flex;flex-direction:column;gap:0}
+.claim{padding:18px 0;border-top:1px solid var(--rule)}
+.claim:first-child{border-top:0;padding-top:4px}
+.claim p:last-child{font-size:22px;line-height:1.4;margin:8px 0 0;color:var(--ink)}
+.exception{border:1px dashed var(--accent-50);background:var(--accent-05);border-radius:6px;padding:24px 28px}
+.exception ul{margin:14px 0 0;padding-left:20px;font-size:18px;line-height:1.5;color:var(--ink)}
+.exception li+li{margin-top:10px}
+.pull{font:italic 400 26px/1.25 var(--f-display);color:var(--muted);margin:28px 0 0;padding-top:20px;border-top:1px solid var(--rule)}
+
+.c-bench{grid-template-columns:1.35fr 1fr;align-items:center}
+.reads{display:flex;flex-direction:column;gap:16px}
+.reads>div p:last-child{margin:4px 0 0;font-size:16px;color:var(--ink)}
+.reads b{font-weight:600;color:var(--accent-text)}
+.reads .open p:last-child{color:var(--muted)}
+
+/* tables */
+.tbl-wrap{min-width:0;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:17px}
+th{font:500 12px var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--soft);text-align:left;padding:10px 16px;border-bottom:1px solid var(--rule-solid)}
+td{padding:12px 16px;border-bottom:1px solid var(--rule);vertical-align:top;line-height:1.4}
+td:first-child{color:var(--muted);width:30%}
+.cmp .pick{background:var(--accent-tint);color:var(--ink);font-weight:500}
+.cmp th.pick{color:var(--accent-text);background:var(--accent-tint)}
+.flag{color:var(--accent-text);font-weight:600}
+
+.c-algo{grid-template-columns:1fr 1.15fr;align-items:center}
+.cards{display:flex;flex-direction:column;gap:16px}
+.card{background:var(--node);border:1px solid var(--rule);border-radius:6px;padding:20px 24px}
+.card p:last-child{margin:0;font-size:16px;color:var(--muted)}
+
+.stack{flex:1;min-height:0;display:flex;flex-direction:column;gap:16px}
+.reqs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;border-top:1px solid var(--rule);padding-top:14px}
+.reqs p{margin:0;font-size:15px;color:var(--ink)}
+.reqs .mono{display:block;margin-bottom:4px;font-size:12px}
+
+.c-man{grid-template-columns:.9fr 1.25fr;align-items:start}
+.manifest{margin:0;font:400 15px/1.9 var(--f-mono);color:var(--ink);background:var(--node);border:1px solid var(--rule);border-radius:6px;padding:20px 24px;overflow-x:auto}
+.manifest .c{color:var(--soft)}
+.chk td.y{color:var(--ink);font-weight:500}
+.chk td.n{color:var(--soft)}
+.c-man .note{margin-top:14px}
+
+.c-otp{grid-template-columns:1.3fr 1fr;align-items:start}
+.otp{display:flex;flex-direction:column;border:1px solid var(--rule-solid);border-radius:6px;overflow:hidden;background:var(--node)}
+.otp .row{display:grid;grid-template-columns:140px 1fr 1fr;gap:16px;padding:13px 18px;border-top:1px solid var(--rule);align-items:baseline}
+.otp .row:first-child{border-top:0}
+.otp .r{font:500 12px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--soft)}
+.otp .v{font-weight:600;font-size:16px}
+.otp .s{font:400 13px var(--f-mono);color:var(--muted)}
+.otp .row.acc{background:var(--accent-tint);box-shadow:inset 3px 0 0 var(--accent)}
+.otp .row.acc .r{color:var(--accent-text)}
+.otp .row.res .v{color:var(--muted);font-weight:500}
+
+.tl{list-style:none;margin:0;padding:0;flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:32px;align-content:center;position:relative}
+.tl li{position:relative;padding-top:36px;border-top:1px solid var(--rule-solid)}
+.tl li::before{content:"";position:absolute;top:-7px;left:0;width:12px;height:12px;border-radius:50%;background:var(--paper);border:1.2px solid var(--muted)}
+.tl li.acc{border-top-color:var(--accent)}
+.tl li.acc::before{background:var(--accent);border-color:var(--accent)}
+.tl li.acc .mono{color:var(--accent-text)}
+.tl h3{font:400 32px/1.1 var(--f-display);margin:10px 0 10px}
+.tl p:last-child{font-size:17px;color:var(--muted);margin:0}
+
+.c-hyb{grid-template-columns:1fr 1fr 1.25fr;gap:24px;align-items:stretch;align-content:start}
+.c-hyb .card p:last-child{font-size:17px}
+.gate{border:1px dashed var(--accent-50);background:var(--accent-05);border-radius:6px;padding:20px 24px}
+.gate ul{margin:12px 0 0;padding-left:20px;font-size:16px;line-height:1.45}
+.gate li+li{margin-top:6px}
+
+.checklist{flex:1;display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:32px;align-content:start}
+.cgroup ul{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.cgroup li{display:flex;gap:12px;align-items:flex-start}
+.cgroup input{appearance:none;-webkit-appearance:none;flex:none;width:20px;height:20px;margin:2px 0 0;border:1.2px solid var(--muted);border-radius:4px;background:var(--node);cursor:pointer;display:grid;place-content:center}
+.cgroup input:checked{background:var(--accent);border-color:var(--accent)}
+.cgroup input:checked::after{content:"";width:10px;height:5px;border-left:2px solid var(--paper);border-bottom:2px solid var(--paper);transform:translateY(-1px) rotate(-45deg)}
+.cgroup label{font-size:17px;line-height:1.4;cursor:pointer}
+.cgroup input:checked+label{color:var(--soft);text-decoration:line-through;text-decoration-color:var(--rule-solid)}
+.checklist>.note{grid-column:1/-1;font-family:var(--f-mono);font-size:13px;font-variant-numeric:tabular-nums}
+
+.oq td:first-child{width:46%;color:var(--ink);font-weight:500}
+.oq td:last-child{color:var(--muted)}
+.closing{font:italic 400 26px/1.3 var(--f-display);color:var(--ink);margin:28px 0 0}
+
+/* notes panel */
+.npanel{flex:none;max-height:28%;overflow:auto;background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:14px 20px}
+.npanel p{margin:0 0 8px;font-size:15px;max-width:110ch}
+.npanel .mono{font-size:11px;margin-bottom:8px}
+
+.chk{font-size:16px}
+.chk td{padding:8px 16px}
+.chk td:first-child{width:48%}
+.c-man{grid-template-columns:.8fr 1.35fr}
+.c-bench{grid-template-columns:1.6fr 1fr}
+
+/* phone and narrow: stacked, readable cards */
+@media (max-width: 820px){
+  body{overflow:auto}
+  .app{height:auto}
+  .btns,.npanel{display:none}
+  .bar{position:sticky;top:env(safe-area-inset-top,0px);background:var(--desk);z-index:2;padding-top:4px}
+  .stage{flex:none}
+  .deck{position:static;width:auto;height:auto;transform:none!important;display:flex;flex-direction:column;gap:16px}
+  .slide,.slide.active{position:relative;display:flex;inset:auto;padding:28px 20px 20px}
+  h1{font-size:48px}
+  h2{font-size:30px}
+  .lede,.title-slide .lede{font-size:17px}
+  .cols,.c-rec,.c-bench,.c-algo,.c-man,.c-otp,.c-hyb,.checklist,.reqs,.stats,.tl{grid-template-columns:1fr;gap:20px}
+  .stat{border-right:0;margin-right:0;border-bottom:1px solid var(--rule);padding:14px 0}
+  .stat .num{font-size:48px}
+  .title-slide .s-foot{margin-top:24px}
+  .fig{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .fig-svg{min-width:760px;height:auto}
+  .claim p:last-child{font-size:18px}
+  .otp .row{grid-template-columns:1fr;gap:4px}
+  table{font-size:15px}
+  .slide .notes{display:block;margin-top:16px;border-top:1px solid var(--rule);padding-top:12px}
+  .notes summary{font:500 12px var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--soft);cursor:pointer}
+  .notes .nb p{font-size:15px;color:var(--muted)}
+}
+@media (prefers-reduced-motion: reduce){ .prog span{transition:none} }
+
+</style>
+</head>
+<body>
+<svg class="defs" width="0" height="0" aria-hidden="true" focusable="false"><defs>
+<marker id="mk" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" class="mk-d"/></marker>
+<marker id="mk-acc" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" class="mk-a"/></marker>
+</defs></svg>
+<div class="app">
+<nav class="bar" aria-label="Slide controls">
+ <span class="brand">TC4xx secure boot</span>
+ <span class="ctr" id="ctr" aria-live="polite">1 / 18</span>
+ <span class="btns">
+  <button type="button" id="prev" aria-label="Previous slide">←</button>
+  <button type="button" id="next" aria-label="Next slide">→</button>
+  <button type="button" id="ntoggle" aria-pressed="false">Notes <kbd>N</kbd></button>
+ </span>
+ <span class="prog" aria-hidden="true"><span id="progbar"></span></span>
+</nav>
+<main class="stage" id="stage">
+<div class="deck" id="deck">
+<section class="slide title-slide" id="s1" aria-label="Slide 1: Sign once, verify at every boot">
+<div class="t-top">
+<p class="kicker">Secure boot · AURIX TC4xx · architecture recommendation</p>
+<h1>Sign once.<br>Verify at every boot.</h1>
+<p class="lede">Replace the on-device CMAC with OEM signature verification at startup. ECDSA now, ML-DSA as the target, one key chain for flashing and boot.</p>
+</div>
+<div class="stats">
+<div class="stat acc"><span class="num">~5<small> ms</small></span><span class="cap">ECDSA hash + verify, 2 MB image</span><span class="tag">measured</span></div>
+<div class="stat"><span class="num">~13<small> ms</small></span><span class="cap">ML-DSA hash + verify, 2 MB image</span><span class="tag">measured</span></div>
+<div class="stat"><span class="num">0</span><span class="cap">secret keys stored on the ECU</span><span class="tag">public anchor only</span></div>
+</div>
+<footer class="s-foot"><span>As of 9 October 2026</span><span>01 / 18</span></footer>
+<details class="notes"><summary>Speaker notes</summary><div class="nb"><p>The ask: switch TC4xx ECUs from the hybrid model (signature at flashing, device CMAC at boot) to verifying the OEM signature at every boot.</p><p>Two numbers frame it: ECDSA costs about 5 ms and ML-DSA about 13 ms over a 2 MB image on TC4xx. The CMAC we would save time with has to read the same 2 MB, so the saving is small. The security gain is large: no device secret, no recompute step.</p></div></details>
+</section>
+<section class="slide " id="s2" aria-label="Slide 2: Verify the OEM signature at boot. Drop the on-device CMAC.">
+<header class="s-head"><p class="kicker">Recommendation</p><h2>Verify the OEM signature at boot. Drop the on-device CMAC.</h2></header>
+<div class="s-body">
+<div class="cols c-rec">
+ <div class="claims">
+  <div class="claim"><p class="mono">One signature</p><p>One signature over the image, verified at flashing and again at every boot.</p></div>
+  <div class="claim"><p class="mono">No secret on the ECU</p><p>The private key stays in the OEM backend HSM. The ECU holds only the public key anchor.</p></div>
+  <div class="claim"><p class="mono">PQC path built in</p><p>ECDSA today, ML-DSA as the target. Anchors for both are provisioned from day one.</p></div>
+ </div>
+ <div class="exception">
+  <p class="mono">Keep the hybrid only where</p>
+  <ul>
+   <li>the measured boot-time delta does not fit the startup budget, even with staged verification</li>
+   <li>the ECU is SHE-class with no ECC/SHA acceleration, for example TC3xx</li>
+  </ul>
+  <p class="pull">“The CMAC is only as trustworthy as the moment it was computed.”</p>
+ </div>
+</div></div>
+<footer class="s-foot"><span>TC4xx secure boot · signature over CMAC</span><span>02 / 18</span></footer>
+<details class="notes"><summary>Speaker notes</summary><div class="nb"><p>Three properties carry the recommendation. One signature, checked twice, means one mechanism to implement, test and argue. Nothing secret lives on the ECU, so there is nothing to extract and no device key to provision per unit. And the verifier is built for the ML-DSA switch from the start.</p><p>The hybrid survives in two places only: classes where the boot-time numbers genuinely do not fit, and older SHE-class parts that cannot do ECC or fast SHA.</p></div></details>
+</section>
+<section class="slide " id="s3" aria-label="Slide 3: Two boot models. One step makes the difference.">
+<header class="s-head"><p class="kicker">Concept · two boot models</p><h2>Two boot models. One step makes the difference.</h2></header>
+<div class="s-body"><div class="fig"><svg class="fig-svg" viewBox="0 0 1152 500" role="img" aria-labelledby="models-title models-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="models-title">Hybrid model versus signature at boot</title>
+<desc id="models-desc">Two lanes compare the hybrid model, which computes and stores a device CMAC after flashing, with the recommended model, which verifies the same OEM signature at flashing and at every boot.</desc>
+<text x="296" y="28" class="eb" text-anchor="middle">BACKEND</text>
+<text x="544" y="28" class="eb" text-anchor="middle">FLASHING</text>
+<text x="792" y="28" class="eb" text-anchor="middle">FIRST BOOT AFTER UPDATE</text>
+<text x="1040" y="28" class="eb" text-anchor="middle">EVERY BOOT</text>
+<rect x="0" y="48" width="1152" height="184" rx="8" class="zone"/>
+<rect x="0" y="252" width="1152" height="184" rx="8" class="zone"/>
+<text x="20" y="120" class="eb" text-anchor="start">TODAY</text>
+<text x="20" y="144" class="nm" text-anchor="start">Hybrid</text>
+<text x="20" y="164" class="sl" text-anchor="start">signature + CMAC</text>
+<text x="20" y="324" class="eb" text-anchor="start">RECOMMENDED</text>
+<text x="20" y="348" class="nm" text-anchor="start">Signature at boot</text>
+<text x="20" y="368" class="sl" text-anchor="start">one mechanism</text>
+<path d="M396,136 H444" class="ar" marker-end="url(#mk)"/>
+<path d="M644,136 H692" class="ar" marker-end="url(#mk)"/>
+<path d="M892,136 H940" class="ar" marker-end="url(#mk)"/>
+<path d="M396,340 H444" class="ar" marker-end="url(#mk)"/>
+<path d="M644,340 H940" class="ar acc" marker-end="url(#mk-acc)"/>
+<rect x="716.0" y="318" width="152" height="16" rx="2" class="mk"/><text x="792" y="330" class="al" text-anchor="middle">NO RECOMPUTE STEP</text>
+<rect x="196" y="88" width="200" height="96" rx="6" class="pm"/>
+<rect x="196" y="88" width="200" height="96" rx="6" class="box"/>
+<text x="296.0" y="115.9" class="kk" text-anchor="middle">OEM</text>
+<text x="296.0" y="141.0" class="nm" text-anchor="middle">Sign image</text>
+<text x="296.0" y="162.9" class="sl" text-anchor="middle">ECDSA · backend HSM</text>
+<rect x="444" y="88" width="200" height="96" rx="6" class="pm"/>
+<rect x="444" y="88" width="200" height="96" rx="6" class="box"/>
+<text x="544.0" y="115.9" class="kk" text-anchor="middle">BOOTLOADER</text>
+<text x="544.0" y="141.0" class="nm" text-anchor="middle">Verify signature</text>
+<text x="544.0" y="162.9" class="sl" text-anchor="middle">before erase / commit</text>
+<rect x="692" y="88" width="200" height="96" rx="6" class="pm"/>
+<rect x="692" y="88" width="200" height="96" rx="6" class="sec"/>
+<text x="792.0" y="115.9" class="kk" text-anchor="middle">HSM</text>
+<text x="792.0" y="141.0" class="nm" text-anchor="middle">Compute + store CMAC</text>
+<text x="792.0" y="162.9" class="sl" text-anchor="middle">device-unique key</text>
+<rect x="940" y="88" width="200" height="96" rx="6" class="pm"/>
+<rect x="940" y="88" width="200" height="96" rx="6" class="box"/>
+<text x="1040.0" y="115.9" class="kk" text-anchor="middle">HSM</text>
+<text x="1040.0" y="141.0" class="nm" text-anchor="middle">Check CMAC</text>
+<text x="1040.0" y="162.9" class="sl" text-anchor="middle">AES-CMAC over 2 MB</text>
+<text x="792" y="216" class="co" text-anchor="middle">the CMAC is only as trustworthy as this moment</text>
+<rect x="196" y="292" width="200" height="96" rx="6" class="pm"/>
+<rect x="196" y="292" width="200" height="96" rx="6" class="box"/>
+<text x="296.0" y="319.9" class="kk" text-anchor="middle">OEM</text>
+<text x="296.0" y="345.0" class="nm" text-anchor="middle">Sign manifest</text>
+<text x="296.0" y="366.9" class="sl" text-anchor="middle">ECDSA → ML-DSA</text>
+<rect x="444" y="292" width="200" height="96" rx="6" class="pm"/>
+<rect x="444" y="292" width="200" height="96" rx="6" class="box"/>
+<text x="544.0" y="319.9" class="kk" text-anchor="middle">BOOTLOADER</text>
+<text x="544.0" y="345.0" class="nm" text-anchor="middle">Verify signature</text>
+<text x="544.0" y="366.9" class="sl" text-anchor="middle">+ rollback · ECU ID</text>
+<rect x="940" y="292" width="200" height="96" rx="6" class="pm"/>
+<rect x="940" y="292" width="200" height="96" rx="6" class="focal"/>
+<text x="1040.0" y="319.9" class="kk" text-anchor="middle">HSM</text>
+<text x="1040.0" y="345.0" class="nm" text-anchor="middle">Verify signature</text>
+<text x="1040.0" y="366.9" class="sl" text-anchor="middle">same key, same signature</text>
+<text x="792" y="376" class="co" text-anchor="middle">nothing to learn, nothing to bypass</text>
+<line x1="0" y1="456" x2="1152" y2="456" class="hair"/>
+<text x="0" y="478" class="eb">LEGEND</text>
+<rect x="96" y="468" width="24" height="12" rx="2" class="pm"/><rect x="96" y="468" width="24" height="12" rx="2" class="focal"/>
+<text x="132" y="478" class="lg" text-anchor="start">Recommended boot check</text>
+<rect x="324" y="468" width="24" height="12" rx="2" class="pm"/><rect x="324" y="468" width="24" height="12" rx="2" class="sec"/>
+<text x="360" y="478" class="lg" text-anchor="start">Residual-risk step</text>
+<rect x="524" y="468" width="24" height="12" rx="2" class="pm"/><rect x="524" y="468" width="24" height="12" rx="2" class="box"/>
+<text x="560" y="478" class="lg" text-anchor="start">Step</text>
+</svg></div></div>
+<footer class="s-foot"><span>TC4xx secure boot · signature over CMAC</span><span>03 / 18</span></footer>
+<details class="notes"><summary>Speaker notes</summary><div class="nb"><p>Both models start the same way: the OEM backend signs, and the bootloader verifies that signature at flashing.</p><p>The hybrid then adds a third step: after the update, the HSM computes a CMAC over the image with a device-unique key and stores it. Every later boot checks only that CMAC. The boot check therefore proves "unchanged since the MAC was computed", not "released by the OEM".</p><p>The recommended model simply removes that step. The HSM checks the same signature the bootloader checked. Same key, same manifest, one mechanism.</p></div></details>
+</section>
+<section class="slide " id="s4" aria-label="Slide 4: The recompute gate is the hybrid&#x27;s largest residual risk.">
+<header class="s-head"><p class="kicker">Concept · residual risk</p><h2>The recompute gate is the hybrid's largest residual risk.</h2></header>
+<div class="s-body"><div class="fig"><svg class="fig-svg" viewBox="0 0 1152 420" role="img" aria-labelledby="risk-title risk-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="risk-title">Attack paths into the CMAC recompute gate</title>
+<desc id="risk-desc">Debug access, a weak UDS 0x27 unlock and autonomous MAC learning all lead to the CMAC recompute step in the hybrid model, while signature verification at boot rejects a tampered image with no gate to attack.</desc>
+<text x="0" y="20" class="eb" text-anchor="start">HYBRID · PATHS INTO THE RECOMPUTE GATE</text>
+<path d="M240,72 H272 Q280,72 280,80 V132 Q280,140 288,140 H320" class="ar" marker-end="url(#mk)"/>
+<path d="M240,168 H320" class="ar" marker-end="url(#mk)"/>
+<path d="M240,264 H272 Q280,264 280,256 V204 Q280,196 288,196 H320" class="ar" marker-end="url(#mk)"/>
+<path d="M560,168 H640" class="ar" marker-end="url(#mk)"/>
+<rect x="0" y="40" width="240" height="64" rx="6" class="pm"/>
+<rect x="0" y="40" width="240" height="64" rx="6" class="ext"/>
+<text x="120.0" y="66.0" class="nm" text-anchor="middle">Debug access</text>
+<text x="120.0" y="87.9" class="sl" text-anchor="middle">JTAG / DAP left open</text>
+<rect x="0" y="136" width="240" height="64" rx="6" class="pm"/>
+<rect x="0" y="136" width="240" height="64" rx="6" class="ext"/>
+<text x="120.0" y="162.0" class="nm" text-anchor="middle">UDS 0x27 unlock</text>
+<text x="120.0" y="183.9" class="sl" text-anchor="middle">weak seed / key</text>
+<rect x="0" y="232" width="240" height="64" rx="6" class="pm"/>
+<rect x="0" y="232" width="240" height="64" rx="6" class="ext"/>
+<text x="120.0" y="258.0" class="nm" text-anchor="middle">Autonomous MAC learning</text>
+<text x="120.0" y="279.9" class="sl" text-anchor="middle">HSM re-MACs any flash content</text>
+<rect x="320" y="112" width="240" height="112" rx="6" class="pm"/>
+<rect x="320" y="112" width="240" height="112" rx="6" class="sec"/>
+<text x="440.0" y="147.9" class="kk" text-anchor="middle">HSM</text>
+<text x="440.0" y="173.0" class="nm" text-anchor="middle">CMAC recompute</text>
+<text x="440.0" y="194.9" class="sl" text-anchor="middle">device-unique key</text>
+<rect x="640" y="128" width="240" height="80" rx="6" class="pm"/>
+<rect x="640" y="128" width="240" height="80" rx="6" class="box"/>
+<text x="760.0" y="162.0" class="nm" text-anchor="middle">Tampered image boots</text>
+<text x="760.0" y="183.9" class="sl" text-anchor="middle">valid MAC at every start</text>
+<text x="912" y="152" class="co" text-anchor="start">Each path has to be closed,</text>
+<text x="912" y="172" class="co" text-anchor="start">enforced and argued</text>
+<text x="912" y="192" class="co" text-anchor="start">in the TARA.</text>
+<line x1="0" y1="312" x2="1152" y2="312" class="hair"/>
+<text x="0" y="336" class="eb" text-anchor="start">SIGNATURE AT BOOT · NO GATE TO ATTACK</text>
+<path d="M240,384 H320" class="ar" marker-end="url(#mk)"/>
+<path d="M560,384 H640" class="ar" marker-end="url(#mk)"/>
+<rect x="0" y="352" width="240" height="64" rx="6" class="pm"/>
+<rect x="0" y="352" width="240" height="64" rx="6" class="ext"/>
+<text x="120.0" y="378.0" class="nm" text-anchor="middle">Tampered image</text>
+<text x="120.0" y="399.9" class="sl" text-anchor="middle">any flash write path</text>
+<rect x="320" y="352" width="240" height="64" rx="6" class="pm"/>
+<rect x="320" y="352" width="240" height="64" rx="6" class="focal"/>
+<text x="440.0" y="378.0" class="nm" text-anchor="middle">Verify OEM signature</text>
+<text x="440.0" y="399.9" class="sl" text-anchor="middle">public key in OTP</text>
+<rect x="640" y="352" width="240" height="64" rx="6" class="pm"/>
+<rect x="640" y="352" width="240" height="64" rx="6" class="box"/>
+<text x="760.0" y="378.0" class="nm" text-anchor="middle">Rejected at boot</text>
+<text x="760.0" y="399.9" class="sl" text-anchor="middle">fallback / A-B slot</text>
+<text x="912" y="376" class="co" text-anchor="start">No secret on the ECU</text>
+<text x="912" y="396" class="co" text-anchor="start">to extract or misuse.</text>
+</svg></div></div>
+<footer class="s-foot"><span>TC4xx secure boot · signature over CMAC</span><span>04 / 18</span></footer>
+<details class="notes"><summary>Speaker notes</summary><div class="nb"><p>Whoever can trigger the CMAC recompute can make any image "valid" for every future boot. That gate can be reached through left-open debug access, a weak UDS 0x27 seed/key unlock, or an HSM that learns a MAC for whatever is in flash on its own.</p><p>Each of those paths must be controlled, tested and argued in the TARA and the R156 case. With signature at boot there is no gate: a tampered image fails against the public anchor, and there is no secret on the ECU that would help an attacker.</p></div></details>
+</section>
+<section class="slide " id="s5" aria-label="Slide 5: On TC4xx the boot-time argument for CMAC is weak.">
+<header class="s-head"><p class="kicker">Evidence · benchmark on TC4xx</p><h2>On TC4xx the boot-time argument for CMAC is weak.</h2></header>
+<div class="s-body">
+<div class="cols c-bench">
+ <div class="fig"><svg class="fig-svg" viewBox="0 0 760 320" role="img" aria-labelledby="bench-title bench-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="bench-title">Boot verification time on TC4xx for a 2 MB image</title>
+<desc id="bench-desc">Horizontal bars: ECDSA about 5 ms and ML-DSA about 13 ms measured; AES-CMAC estimated at 2 to 5 ms and not yet measured.</desc>
+<line x1="200" y1="24" x2="200" y2="264" class="grid"/>
+<text x="200" y="288" class="tk" text-anchor="middle">0 ms</text>
+<line x1="360" y1="24" x2="360" y2="264" class="grid"/>
+<text x="360" y="288" class="tk" text-anchor="middle">5</text>
+<line x1="520" y1="24" x2="520" y2="264" class="grid"/>
+<text x="520" y="288" class="tk" text-anchor="middle">10</text>
+<line x1="680" y1="24" x2="680" y2="264" class="grid"/>
+<text x="680" y="288" class="tk" text-anchor="middle">15 ms</text>
+<line x1="200" y1="264" x2="680" y2="264" class="base"/>
+<text x="680" y="312" class="tk" text-anchor="end">hash + verify over 2 MB</text>
+<text x="0" y="58" class="nm" text-anchor="start">ECDSA</text>
+<text x="0" y="76" class="sl" text-anchor="start">measured</text>
+<text x="0" y="138" class="nm" text-anchor="start">ML-DSA</text>
+<text x="0" y="156" class="sl" text-anchor="start">measured</text>
+<text x="0" y="218" class="nm" text-anchor="start">AES-CMAC</text>
+<text x="0" y="236" class="sl" text-anchor="start">not yet measured</text>
+<rect x="200" y="40" width="160" height="40" rx="2" class="bar-acc"/>
+<rect x="200" y="120" width="416" height="40" rx="2" class="bar-m"/>
+<rect x="264" y="200" width="96" height="40" rx="2" class="bar-est"/>
+<text x="372" y="64" class="val" text-anchor="start">~5 ms</text>
+<text x="372" y="80" class="sl" text-anchor="start">+0 to 3 ms over CMAC</text>
+<text x="628" y="144" class="val" text-anchor="start">~13 ms</text>
+<text x="628" y="160" class="sl" text-anchor="start">+~10 ms over CMAC</text>
+<text x="372" y="224" class="val" text-anchor="start">est. 2–5 ms</text>
+<text x="372" y="240" class="sl" text-anchor="start">same 2 MB pass as the hash</text>
+</svg></div>
+ <div class="reads">
+  <div><p class="mono">Hash dominates</p><p>On a 2 MB image most of the time is the pass over the data. A CMAC must also read all 2 MB, so it lands in the same range as the hash share.</p></div>
+  <div><p class="mono">The real gap</p><p>Expected cost over CMAC: <b>+0 to 3 ms</b> for ECDSA, <b>about +10 ms</b> for ML-DSA.</p></div>
+  <div><p class="mono">Scaling</p><p>If SHA and AES-CMAC throughput are similar, the delta is roughly the fixed verify cost and does not grow with image size.</p></div>
+  <div class="open"><p class="mono">Open</p><p>AES-CMAC over 2 MB is not measured yet. Its bar is an estimate derived from the expected gaps.</p></div>
+ </div>
+</div></div>
+<footer class="s-foot"><span>TC4xx secure boot · signature over CMAC</span><span>05 / 18</span></footer>
+<details class="notes"><summary>Speaker notes</summary><div class="nb"><p>Measured on TC4xx with a 2 MB image: ECDSA about 5 ms, ML-DSA about 13 ms, both including the hash.</p><p>The CMAC estimate of 2 to 5 ms is back-calculated from the expected gaps in the source document (0 to 3 ms for ECDSA, about 10 ms for ML-DSA). It must be replaced by a measurement before rollout.</p><p>The scaling point matters for the open question on large images: the delta comes mostly from the signature verify, which is fixed per image. It only grows with size if SHA and CMAC throughput differ on this HSM, which the benchmark will show.</p></div></details>
+</section>
+<section class="slide " id="s6" aria-label="Slide 6: Signature at boot proves more and stores nothing secret.">
+<header class="s-head"><p class="kicker">Comparison</p><h2>Signature at boot proves more and stores nothing secret.</h2></header>
+<div class="s-body">
+<div class="tbl-wrap"><table class="cmp">
+<thead><tr><th>Criterion</th><th>On-device CMAC (hybrid)</th><th class="pick">Signature at boot</th></tr></thead>
+<tbody>
+<tr><td>What is proven at boot</td><td>Image unchanged since the MAC was computed</td><td class="pick">Image released by the OEM key holder</td></tr>
+<tr><td>Secret stored on the ECU</td><td>Device-unique MAC key</td><td class="pick">None, public key only</td></tr>
+<tr><td>Recompute gate after update</td><td><span class="flag">Yes · main residual risk</span></td><td class="pick">No</td></tr>
+<tr><td>MAC learning or bypass via debug / UDS 0x27</td><td>Must be controlled</td><td class="pick">Not applicable</td></tr>
+<tr><td>Mechanisms to argue in TARA / R156</td><td>Two: signature + CMAC</td><td class="pick">One</td></tr>
+<tr><td>Boot time on TC4xx</td><td>Fastest</td><td class="pick">+0 to 3 ms ECDSA · +~10 ms ML-DSA</td></tr>
+<tr><td>PQC at boot</td><td>Not needed (AES)</td><td class="pick">Feasible, ML-DSA measured at 13 ms</td></tr>
+</tbody></table></div></div>
+<footer class="s-foot"><span>TC4xx secure boot · signature over CMAC</span><span>06 / 18</span></footer>
+<details class="notes"><summary>Speaker notes</summary><div class="nb"><p>Read the table top to bottom: the hybrid wins one row, boot time, and by a few milliseconds on TC4xx. Signature at boot wins on what is actually proven, on what has to be protected on the ECU, and on how much has to be argued in the cybersecurity case.</p><p>The PQC row is a nuance: AES-CMAC is already quantum-resistant at the boot step, but the signature it depends on at flashing is not. The hybrid does not remove the PQC migration; it only hides it at flash time.</p></div></details>
+</section>
+<section class="slide " id="s7" aria-label="Slide 7: Decision rule per ECU class.">
+<header class="s-head"><p class="kicker">Method · per ECU class</p><h2>Decision rule per ECU class.</h2></header>
+<div class="s-body"><div class="fig"><svg class="fig-svg" viewBox="0 0 1152 400" role="img" aria-labelledby="flow-title flow-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="flow-title">Decision rule per ECU class</title>
+<desc id="flow-desc">Flowchart: measure CMAC, compute the delta, use signature at boot if the delta fits the startup headroom, otherwise try staged verification, and keep the hybrid model only if that also fails.</desc>
+<path d="M200,72 H256" class="ar" marker-end="url(#mk)"/>
+<path d="M456,72 H528" class="ar" marker-end="url(#mk)"/>
+<path d="M688,72 H768" class="ar acc" marker-end="url(#mk-acc)"/>
+<rect x="708.0" y="50" width="40" height="16" rx="2" class="mk"/><text x="728" y="62" class="al" text-anchor="middle">YES</text>
+<path d="M608,120 V184" class="ar" marker-end="url(#mk)"/>
+<rect x="616" y="144" width="32" height="16" rx="2" class="mk"/><text x="632.0" y="156" class="al" text-anchor="middle">NO</text>
+<path d="M688,232 H904 Q912,232 912,224 V112" class="ar acc" marker-end="url(#mk-acc)"/>
+<rect x="744.0" y="210" width="112" height="16" rx="2" class="mk"/><text x="800" y="222" class="al" text-anchor="middle">YES · STAGED</text>
+<path d="M608,280 V320" class="ar" marker-end="url(#mk)"/>
+<rect x="616" y="292" width="32" height="16" rx="2" class="mk"/><text x="632.0" y="304" class="al" text-anchor="middle">NO</text>
+<rect x="0" y="32" width="200" height="80" rx="6" class="pm"/>
+<rect x="0" y="32" width="200" height="80" rx="6" class="box"/>
+<text x="100.0" y="51.9" class="kk" text-anchor="middle">1 · MEASURE</text>
+<text x="100.0" y="77.0" class="nm" text-anchor="middle">AES-CMAC, 2 MB</text>
+<text x="100.0" y="98.9" class="sl" text-anchor="middle">on target hardware</text>
+<rect x="256" y="32" width="200" height="80" rx="6" class="pm"/>
+<rect x="256" y="32" width="200" height="80" rx="6" class="box"/>
+<text x="356.0" y="51.9" class="kk" text-anchor="middle">2 · COMPUTE</text>
+<text x="356.0" y="77.0" class="nm" text-anchor="middle">Delta</text>
+<text x="356.0" y="98.9" class="sl" text-anchor="middle">t_sig − t_cmac</text>
+<polygon points="528,72 608,24 688,72 608,120" class="pm"/><polygon points="528,72 608,24 688,72 608,120" class="box"/>
+<text x="608" y="70" class="nm" text-anchor="middle">Delta fits</text>
+<text x="608" y="90" class="nm" text-anchor="middle">headroom?</text>
+<polygon points="528,232 608,184 688,232 608,280" class="pm"/><polygon points="528,232 608,184 688,232 608,280" class="box"/>
+<text x="608" y="230" class="nm" text-anchor="middle">Staged</text>
+<text x="608" y="250" class="nm" text-anchor="middle">fits?</text>
+<rect x="768" y="32" width="288" height="80" rx="6" class="pm"/>
+<rect x="768" y="32" width="288" height="80" rx="6" class="focal"/>
+<text x="912.0" y="51.9" class="kk" text-anchor="middle">DEFAULT</text>
+<text x="912.0" y="77.0" class="nm" text-anchor="middle">Signature at boot</text>
+<text x="912.0" y="98.9" class="sl" text-anchor="middle">algorithm chosen by budget</text>
+<rect x="488" y="320" width="240" height="64" rx="6" class="pm"/>
+<rect x="488" y="320" width="240" height="64" rx="6" class="store"/>
+<text x="608.0" y="346.0" class="nm" text-anchor="middle">Keep the hybrid</text>
+<text x="608.0" y="367.9" class="sl" text-anchor="middle">this ECU class only</text>
+<text x="0" y="216" class="co" text-anchor="start">Headroom is the margin to the</text>
+<text x="0" y="236" class="co" text-anchor="start">CAN wake-up or first-message</text>
+<text x="0" y="256" class="co" text-anchor="start">deadline of that ECU class.</text>
+</svg></div></div>
+<footer class="s-foot"><span>TC4xx secure boot · signature over CMAC</span><span>07 / 18</span></footer>
+<details class="notes"><summary>Speaker notes</summary><div class="nb"><p>Apply this per ECU class, not once for the whole fleet. Step one is the missing measurement: AES-CMAC over 2 MB on the actual target. Delta is signature time minus CMAC time.</p><p>Compare the delta with the headroom against that class's CAN wake-up or first-message deadline. If it fits, use signature at boot. If not, try staged verification before giving up. Only if staged verification also misses the deadline does the class stay on the hybrid, and then with the recompute gate controls on slide 16.</p></div></details>
+</section>
+<section class="slide " id="s8" aria-label="Slide 8: Pick the algorithm by budget. Keep the verifier crypto-agile.">
+<header class="s-head"><p class="kicker">Method · algorithm choice</p><h2>Pick the algorithm by budget. Keep the verifier crypto-agile.</h2></header>
+<div class="s-body">
+<div class="cols c-algo">
+ <div class="cards">
+  <div class="card"><p class="mono">Budget allows ~13 ms</p><h3>ML-DSA now</h3><p>Or an ECDSA + ML-DSA dual signature during the transition.</p></div>
+  <div class="card"><p class="mono">Budget is tight</p><h3>ECDSA now</h3><p>Ship a crypto-agile verifier and provision PQC anchors from day one.</p></div>
+  <p class="note">A dual-signed manifest carries both signatures. The boot policy decides whether one or both must pass.</p>
+ </div>
+ <div class="fig"><svg class="fig-svg" viewBox="0 0 640 392" role="img" aria-labelledby="agile-title agile-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="agile-title">Crypto-agile boot verifier</title>
+<desc id="agile-desc">A signed manifest feeds an HSM verifier that dispatches by algorithm ID, trusting anchors in OTP and following a one-way boot policy, then boots or rejects.</desc>
+<path d="M320,96 V152" class="ar" marker-end="url(#mk)"/>
+<path d="M236,296 V248" class="ar" marker-end="url(#mk)"/>
+<rect x="164" y="264" width="64" height="16" rx="2" class="mk"/><text x="196.0" y="276" class="al" text-anchor="middle">TRUSTS</text>
+<path d="M404,296 V248" class="ar" marker-end="url(#mk)"/>
+<rect x="412" y="264" width="72" height="16" rx="2" class="mk"/><text x="448.0" y="276" class="al" text-anchor="middle">SELECTS</text>
+<path d="M480,200 H528" class="ar acc" marker-end="url(#mk-acc)"/>
+<rect x="160" y="16" width="320" height="80" rx="6" class="pm"/>
+<rect x="160" y="16" width="320" height="80" rx="6" class="box"/>
+<text x="320.0" y="35.9" class="kk" text-anchor="middle">SIGNED MANIFEST</text>
+<text x="320.0" y="61.0" class="nm" text-anchor="middle">Hash · version · ECU ID</text>
+<text x="320.0" y="82.9" class="sl" text-anchor="middle">sig[ECDSA] + sig[ML-DSA]</text>
+<rect x="160" y="152" width="320" height="96" rx="6" class="pm"/>
+<rect x="160" y="152" width="320" height="96" rx="6" class="focal"/>
+<text x="320.0" y="179.9" class="kk" text-anchor="middle">HSM BOOT VERIFIER</text>
+<text x="320.0" y="205.0" class="nm" text-anchor="middle">Crypto-agile verifier</text>
+<text x="320.0" y="226.9" class="sl" text-anchor="middle">dispatch by algorithm ID</text>
+<rect x="160" y="296" width="152" height="80" rx="6" class="pm"/>
+<rect x="160" y="296" width="152" height="80" rx="6" class="store"/>
+<text x="236.0" y="330.0" class="nm" text-anchor="middle">Trust anchors</text>
+<text x="236.0" y="351.9" class="sl" text-anchor="middle">ECDSA + ML-DSA</text>
+<rect x="328" y="296" width="152" height="80" rx="6" class="pm"/>
+<rect x="328" y="296" width="152" height="80" rx="6" class="store"/>
+<text x="404.0" y="330.0" class="nm" text-anchor="middle">Boot policy</text>
+<text x="404.0" y="351.9" class="sl" text-anchor="middle">one-way upgrade</text>
+<rect x="528" y="168" width="112" height="64" rx="6" class="pm"/>
+<rect x="528" y="168" width="112" height="64" rx="6" class="box"/>
+<text x="584.0" y="194.0" class="nm" text-anchor="middle">Boot</text>
+<text x="584.0" y="215.9" class="sl" text-anchor="middle">or reject</text>
+</svg></div>
+</div></div>
+<footer class="s-foot"><span>TC4xx secure boot · signature over CMAC</span><span>08 / 18</span></footer>
+<details class="notes"><summary>Speaker notes</summary><div class="nb"><p>The algorithm decision is a function of the same budget. Where 13 ms fits, go to ML-DSA now or run dual signatures. Where it does not, start with ECDSA but ship the verifier and the anchors that make ML-DSA a later policy change.</p><p>Crypto-agile here means concrete things: the manifest names its algorithm, the verifier dispatches on that ID, both anchors exist in OTP, and the boot policy can move in one direction only (ECDSA, then dual, then ML-DSA) so an attacker cannot downgrade it.</p></div></details>
+</section>
+<section class="slide " id="s9" aria-label="Slide 9: Try staged verification before falling back to the hybrid.">
+<header class="s-head"><p class="kicker">Option · staged verification</p><h2>Try staged verification before falling back to the hybrid.</h2></header>
+<div class="s-body">
+<div class="stack">
+ <div class="fig"><svg class="fig-svg" viewBox="0 0 1152 380" role="img" aria-labelledby="staged-title staged-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="staged-title">Staged verification timeline</title>
+<desc id="staged-desc">Timeline from reset: the full synchronous verify overruns the first-message deadline, while staged verification checks the boot-critical part first, runs it, and verifies the rest in the background before it executes.</desc>
+<text x="0" y="53" class="nm" text-anchor="start">Full image, synchronous</text>
+<text x="0" y="70" class="sl" text-anchor="start">the case that fails</text>
+<text x="0" y="117" class="nm" text-anchor="start">Boot-critical part</text>
+<text x="0" y="134" class="sl" text-anchor="start">verified synchronously</text>
+<text x="0" y="181" class="nm" text-anchor="start">Boot-critical code runs</text>
+<text x="0" y="198" class="sl" text-anchor="start">after its own check</text>
+<text x="0" y="245" class="nm" text-anchor="start">Remaining part</text>
+<text x="0" y="262" class="sl" text-anchor="start">verified in background</text>
+<text x="0" y="309" class="nm" text-anchor="start">Remaining code runs</text>
+<text x="0" y="326" class="sl" text-anchor="start">only once verified</text>
+<line x1="0" y1="84" x2="1152" y2="84" class="hair"/>
+<path d="M720,264 V296" class="ar" marker-end="url(#mk)"/>
+<rect x="728" y="272" width="80" height="16" rx="2" class="mk"/><text x="768.0" y="284" class="al" text-anchor="middle">VERIFIED</text>
+<rect x="304" y="40" width="456" height="32" rx="4" class="opt"/>
+<text x="316" y="61" class="sl" text-anchor="start">hash + verify all 2 MB</text>
+<text x="772" y="61" class="sl" text-anchor="start">exceeds headroom</text>
+<rect x="304" y="104" width="120" height="32" rx="4" class="pm"/><rect x="304" y="104" width="120" height="32" rx="4" class="focal"/>
+<rect x="424" y="168" width="696" height="32" rx="4" class="pm"/><rect x="424" y="168" width="696" height="32" rx="4" class="box"/>
+<text x="436" y="189" class="sl" text-anchor="start">CAN init · first frame sent</text>
+<rect x="424" y="232" width="296" height="32" rx="4" class="pm"/><rect x="424" y="232" width="296" height="32" rx="4" class="store"/>
+<text x="436" y="253" class="sl" text-anchor="start">HSM hashes remaining segments</text>
+<rect x="720" y="296" width="400" height="32" rx="4" class="pm"/><rect x="720" y="296" width="400" height="32" rx="4" class="box"/>
+<text x="732" y="317" class="sl" text-anchor="start">application segments</text>
+<line x1="640" y1="28" x2="640" y2="344" class="ar acc dsh"/>
+<rect x="544" y="8" width="192" height="16" rx="2" class="mk"/>
+<text x="640" y="20" class="al-acc" text-anchor="middle">FIRST-MESSAGE DEADLINE</text>
+<line x1="304" y1="352" x2="1120" y2="352" class="base"/>
+<text x="304" y="372" class="tk" text-anchor="start">reset</text>
+<text x="1120" y="372" class="tk" text-anchor="end">time →</text>
+</svg></div>
+ <div class="reqs">
+  <p><span class="mono">Manifest</span>One signature covers a manifest that lists a hash per segment.</p>
+  <p><span class="mono">Execution gate</span>Later segments cannot run until their hash checks out.</p>
+  <p><span class="mono">Failure path</span>A background failure resets to the fallback image.</p>
+ </div>
+</div></div>
+<footer class="s-foot"><span>TC4xx secure boot · signature over CMAC</span><span>09 / 18</span></footer>
+<details class="notes"><summary>Speaker notes</summary><div class="nb"><p>Staged verification keeps the signature model when the full verify is too slow for the first-message deadline. The HSM verifies the manifest signature and the boot-critical segment synchronously, that code starts and sends its first CAN frame, and the remaining segments are hashed in the background.</p><p>Three design points make it safe: the signed manifest lists per-segment hashes, so one signature still covers everything; nothing in a later segment may execute before its hash is checked; and a failed background check resets to the fallback image. The boot-critical part should not do anything that depends on the unverified rest.</p></div></details>
+</section>
+<section class="slide " id="s10" aria-label="Slide 10: One signature, checked twice.">
+<header class="s-head"><p class="kicker">Key management · flow</p><h2>One signature, checked twice.</h2></header>
+<div class="s-body"><div class="fig"><svg class="fig-svg" viewBox="0 0 1152 480" role="img" aria-labelledby="seq-title seq-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="seq-title">One signature checked at flashing and at every boot</title>
+<desc id="seq-desc">Sequence: the signing service issues a signed manifest, the flash tool downloads it, the bootloader verifies signature, rollback, ECU ID and dependencies before erasing, and the HSM verifies the same signature at every boot.</desc>
+<line x1="144" y1="72" x2="144" y2="464" class="ll"/>
+<line x1="432" y1="72" x2="432" y2="464" class="ll"/>
+<line x1="720" y1="72" x2="720" y2="464" class="ll"/>
+<line x1="1008" y1="72" x2="1008" y2="464" class="ll"/>
+<rect x="600" y="320" width="528" height="140" rx="4" class="frag"/>
+<rect x="600" y="320" width="168" height="20" rx="2" class="frag-tab"/>
+<text x="612" y="334" class="eb" text-anchor="start">LOOP · EVERY BOOT</text>
+<path d="M144,120 H432" class="ar" marker-end="url(#mk)"/>
+<rect x="188.0" y="98" width="200" height="16" rx="2" class="mk"/><text x="288" y="110" class="al" text-anchor="middle">SIGNED MANIFEST + IMAGE</text>
+<path d="M432,168 H716" class="ar" marker-end="url(#mk)"/>
+<rect x="536.0" y="146" width="80" height="16" rx="2" class="mk"/><text x="576" y="158" class="al" text-anchor="middle">DOWNLOAD</text>
+<path d="M724,376 H1004" class="ar acc" marker-end="url(#mk-acc)"/>
+<rect x="792.0" y="354" width="144" height="16" rx="2" class="mk"/><text x="864" y="366" class="al" text-anchor="middle">VERIFY SIGNATURE</text>
+<path d="M1004,424 H724" class="ar dsh" marker-end="url(#mk)"/>
+<rect x="736.0" y="402" width="256" height="16" rx="2" class="mk"/><text x="864" y="414" class="al" text-anchor="middle">PASS → START · FAIL → FALLBACK</text>
+<rect x="716" y="176" width="8" height="112" rx="2" class="act"/>
+<rect x="716" y="368" width="8" height="64" rx="2" class="act"/>
+<rect x="1004" y="368" width="8" height="64" rx="2" class="act"/>
+<rect x="32" y="16" width="224" height="56" rx="6" class="pm"/>
+<rect x="32" y="16" width="224" height="56" rx="6" class="box"/>
+<text x="144.0" y="38.0" class="nm" text-anchor="middle">Signing service</text>
+<text x="144.0" y="59.9" class="sl" text-anchor="middle">OEM backend HSM</text>
+<rect x="320" y="16" width="224" height="56" rx="6" class="pm"/>
+<rect x="320" y="16" width="224" height="56" rx="6" class="ext"/>
+<text x="432.0" y="38.0" class="nm" text-anchor="middle">Flash tool / OTA</text>
+<text x="432.0" y="59.9" class="sl" text-anchor="middle">line · workshop · air</text>
+<rect x="608" y="16" width="224" height="56" rx="6" class="pm"/>
+<rect x="608" y="16" width="224" height="56" rx="6" class="box"/>
+<text x="720.0" y="38.0" class="nm" text-anchor="middle">Bootloader</text>
+<text x="720.0" y="59.9" class="sl" text-anchor="middle">on the ECU</text>
+<rect x="896" y="16" width="224" height="56" rx="6" class="pm"/>
+<rect x="896" y="16" width="224" height="56" rx="6" class="focal"/>
+<text x="1008.0" y="38.0" class="nm" text-anchor="middle">HSM</text>
+<text x="1008.0" y="59.9" class="sl" text-anchor="middle">TC4xx security module</text>
+<rect x="744" y="184" width="240" height="104" rx="6" class="pm"/>
+<rect x="744" y="184" width="240" height="104" rx="6" class="box"/>
+<text x="864.0" y="206.9" class="kk" text-anchor="middle">BEFORE ERASE</text>
+<text x="864.0" y="232.0" class="nm" text-anchor="middle">Verify signature</text>
+<text x="864.0" y="253.9" class="sl" text-anchor="middle">anti-rollback · ECU ID · deps</text>
+<text x="864.0" y="271.9" class="sl" text-anchor="middle">erase + commit only on pass</text>
+<text x="32" y="376" class="co" text-anchor="start">The private key never</text>
+<text x="32" y="396" class="co" text-anchor="start">leaves the backend HSM.</text>
+<text x="320" y="376" class="co" text-anchor="start">Transport is untrusted:</text>
+<text x="320" y="396" class="co" text-anchor="start">it holds no keys.</text>
+</svg></div></div>
+<footer class="s-foot"><span>TC4xx secure boot · signature over CMAC</span><span>10 / 18</span></footer>
+<details class="notes"><summary>Speaker notes</summary><div class="nb"><p>The backend signs a manifest containing the image hash, version, target ECU ID and the signature. The flash tool or OTA client only transports it.</p><p>The bootloader verifies the signature at flashing, before it erases or commits anything, and also checks the anti-rollback counter, the ECU ID or variant, and manifest dependencies. At every boot the HSM verifies the same signature with the same public anchor. One key, one signature, two checkpoints.</p></div></details>
+</section>
+<section class="slide " id="s11" aria-label="Slide 11: Keep the flash-time check. It guards what boot cannot.">
+<header class="s-head"><p class="kicker">Key management · flash-time check</p><h2>Keep the flash-time check. It guards what boot cannot.</h2></header>
+<div class="s-body">
+<div class="cols c-man">
+ <pre class="manifest" aria-label="Manifest fields"><span class="c">// signed manifest</span>
+image_hash      <span class="c">hash of the full image</span>
+version         <span class="c">anti-rollback value</span>
+target_ecu_id   <span class="c">ECU / variant</span>
+dependencies    <span class="c">required versions</span>
+segment_hashes  <span class="c">optional, for staged boot</span>
+signature       <span class="c">ECDSA | ML-DSA | both</span></pre>
+ <div class="tbl-wrap"><table class="chk">
+ <thead><tr><th>Check</th><th>At flashing</th><th>Every boot</th></tr></thead>
+ <tbody>
+ <tr><td>Signature over the manifest</td><td class="y">Yes</td><td class="y">Yes</td></tr>
+ <tr><td>Image matches the signed hash</td><td class="y">Yes</td><td class="y">Yes</td></tr>
+ <tr><td>Anti-rollback version counter</td><td class="y">Yes</td><td class="n">Not needed</td></tr>
+ <tr><td>Target ECU ID / variant</td><td class="y">Yes</td><td class="n">Not needed</td></tr>
+ <tr><td>Manifest dependencies</td><td class="y">Yes</td><td class="n">Not needed</td></tr>
+ <tr><td>Reject before the working image is erased</td><td class="y">Yes</td><td class="n">n/a</td></tr>
+ </tbody></table>
+ <p class="note">Rejecting a bad image before erase means no bricking: the A/B slot or fallback stays intact.</p></div>
+</div></div>
+<footer class="s-foot"><span>TC4xx secure boot · signature over CMAC</span><span>11 / 18</span></footer>
+<details class="notes"><summary>Speaker notes</summary><div class="nb"><p>A natural question: if boot verifies anyway, why verify at flashing? Two reasons. First, a bad image is rejected before the working image is erased, so the ECU never bricks and the A/B or fallback slot stays usable. Second, flashing checks things boot does not need: the anti-rollback counter, the target ECU ID and variant, and dependencies between images.</p><p>The segment_hashes field is optional and only needed if a class uses staged verification.</p></div></details>
+</section>
+<section class="slide " id="s12" aria-label="Slide 12: Private key in the backend. Public anchor on the ECU.">
+<header class="s-head"><p class="kicker">Key management · where keys live</p><h2>Private key in the backend. Public anchor on the ECU.</h2></header>
+<div class="s-body"><div class="fig"><svg class="fig-svg" viewBox="0 0 1152 360" role="img" aria-labelledby="keys-title keys-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="keys-title">Where the signing keys live</title>
+<desc id="keys-desc">Three zones: the private key stays in the OEM backend signing HSM with audit, the flash tool and OTA path hold no keys, and the ECU keeps only write-locked public anchors used by the bootloader and HSM.</desc>
+<rect x="0" y="8" width="360" height="344" rx="8" class="zone sec-z"/><text x="16" y="32" class="eb">OEM BACKEND · TRUST BOUNDARY</text>
+<rect x="392" y="8" width="296" height="344" rx="8" class="zone"/><text x="408" y="32" class="eb">PRODUCTION · WORKSHOP · OTA</text>
+<rect x="720" y="8" width="432" height="344" rx="8" class="zone"/><text x="736" y="32" class="eb">ECU · TC4XX</text>
+<path d="M128,176 V248" class="ar" marker-end="url(#mk)"/>
+<rect x="136" y="204" width="64" height="16" rx="2" class="mk"/><text x="168.0" y="216" class="al" text-anchor="middle">LOGGED</text>
+<path d="M328,124 H424" class="ar" marker-end="url(#mk)"/>
+<rect x="344.0" y="102" width="64" height="16" rx="2" class="mk"/><text x="376" y="114" class="al" text-anchor="middle">SIGNED</text>
+<path d="M656,124 H752" class="ar" marker-end="url(#mk)"/>
+<rect x="664.0" y="102" width="80" height="16" rx="2" class="mk"/><text x="704" y="114" class="al" text-anchor="middle">DOWNLOAD</text>
+<path d="M928,124 H960" class="ar" marker-end="url(#mk)"/>
+<path d="M1040,248 V176" class="ar" marker-end="url(#mk)"/>
+<rect x="968" y="204" width="64" height="16" rx="2" class="mk"/><text x="1000.0" y="216" class="al" text-anchor="middle">ANCHOR</text>
+<path d="M296,176 V200 Q296,208 304,208 H832 Q840,208 840,200 V176" class="ar acc dsh"/>
+<circle cx="560" cy="208" r="10" class="pm"/>
+<path d="M554,202 L566,214 M566,202 L554,214" class="ar acc"/>
+<rect x="444" y="224" width="232" height="16" rx="2" class="mk"/>
+<text x="560" y="236" class="al-acc" text-anchor="middle">PRIVATE KEY · NEVER EXPORTED</text>
+<rect x="32" y="72" width="296" height="104" rx="6" class="pm"/>
+<rect x="32" y="72" width="296" height="104" rx="6" class="focal"/>
+<text x="180.0" y="103.9" class="kk" text-anchor="middle">PRIVATE KEY</text>
+<text x="180.0" y="129.0" class="nm" text-anchor="middle">Signing service in HSM</text>
+<text x="180.0" y="150.9" class="sl" text-anchor="middle">dual control for production</text>
+<rect x="32" y="248" width="296" height="80" rx="6" class="pm"/>
+<rect x="32" y="248" width="296" height="80" rx="6" class="store"/>
+<text x="180.0" y="282.0" class="nm" text-anchor="middle">Access control + audit</text>
+<text x="180.0" y="303.9" class="sl" text-anchor="middle">every signing request</text>
+<rect x="424" y="72" width="232" height="104" rx="6" class="pm"/>
+<rect x="424" y="72" width="232" height="104" rx="6" class="ext"/>
+<text x="540.0" y="103.9" class="kk" text-anchor="middle">UNTRUSTED PATH</text>
+<text x="540.0" y="129.0" class="nm" text-anchor="middle">Flash tool / OTA</text>
+<text x="540.0" y="150.9" class="sl" text-anchor="middle">holds no keys</text>
+<rect x="752" y="72" width="176" height="104" rx="6" class="pm"/>
+<rect x="752" y="72" width="176" height="104" rx="6" class="box"/>
+<text x="840.0" y="103.9" class="kk" text-anchor="middle">FLASH TIME</text>
+<text x="840.0" y="129.0" class="nm" text-anchor="middle">Bootloader</text>
+<text x="840.0" y="150.9" class="sl" text-anchor="middle">verify + checks</text>
+<rect x="960" y="72" width="160" height="104" rx="6" class="pm"/>
+<rect x="960" y="72" width="160" height="104" rx="6" class="box"/>
+<text x="1040.0" y="103.9" class="kk" text-anchor="middle">EVERY BOOT</text>
+<text x="1040.0" y="129.0" class="nm" text-anchor="middle">HSM</text>
+<text x="1040.0" y="150.9" class="sl" text-anchor="middle">verify signature</text>
+<rect x="960" y="248" width="160" height="80" rx="6" class="pm"/>
+<rect x="960" y="248" width="160" height="80" rx="6" class="store"/>
+<text x="1040.0" y="282.0" class="nm" text-anchor="middle">OTP anchors</text>
+<text x="1040.0" y="303.9" class="sl" text-anchor="middle">public, write-locked</text>
+<text x="752" y="288" class="co" text-anchor="start">Integrity matters here,</text>
+<text x="752" y="308" class="co" text-anchor="start">not secrecy.</text>
+</svg></div></div>
+<footer class="s-foot"><span>TC4xx secure boot · signature over CMAC</span><span>12 / 18</span></footer>
+<details class="notes"><summary>Speaker notes</summary><div class="nb"><p>The private key lives only inside an HSM-based signing service in the OEM backend, with access control, dual control for production signing and audit logging of every request. It is never on the ECU, the flash tool or workshop equipment.</p><p>The ECU holds the public key in OTP or an HSM-protected key slot. Its secrecy does not matter; its integrity does. It must be immutable and write-protected after end of line.</p></div></details>
+</section>
+<section class="slide " id="s13" aria-label="Slide 13: A key hierarchy that survives a 15-year vehicle life.">
+<header class="s-head"><p class="kicker">Key management · hierarchy</p><h2>A key hierarchy that survives a 15-year vehicle life.</h2></header>
+<div class="s-body"><div class="fig"><svg class="fig-svg" viewBox="0 0 1152 400" role="img" aria-labelledby="tree-title tree-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="tree-title">Code-signing key hierarchy</title>
+<desc id="tree-desc">Tree: an offline production root key signs per-family and per-supplier code-signing keys, which sign image manifests; a separate development root and separate diagnostic, SecOC and TLS key domains sit outside the tree.</desc>
+<path d="M512,112 V136 Q512,144 504,144 H216 Q208,144 208,152 V176" class="ar" marker-end="url(#mk)"/>
+<path d="M576,112 V176" class="ar" marker-end="url(#mk)"/>
+<rect x="584" y="136" width="56" height="16" rx="2" class="mk"/><text x="612.0" y="148" class="al" text-anchor="middle">SIGNS</text>
+<path d="M640,112 V136 Q640,144 648,144 H936 Q944,144 944,152 V176" class="ar" marker-end="url(#mk)"/>
+<path d="M208,264 V328" class="ar" marker-end="url(#mk)"/>
+<path d="M576,264 V328" class="ar" marker-end="url(#mk)"/>
+<path d="M944,264 V328" class="ar" marker-end="url(#mk)"/>
+<rect x="448" y="16" width="256" height="96" rx="6" class="pm"/>
+<rect x="448" y="16" width="256" height="96" rx="6" class="focal"/>
+<text x="576.0" y="43.9" class="kk" text-anchor="middle">OFFLINE · HASH IN OTP</text>
+<text x="576.0" y="69.0" class="nm" text-anchor="middle">Production root key</text>
+<text x="576.0" y="90.9" class="sl" text-anchor="middle">signs only code-signing keys</text>
+<rect x="0" y="16" width="224" height="96" rx="6" class="pm"/>
+<rect x="0" y="16" width="224" height="96" rx="6" class="opt"/>
+<text x="112.0" y="43.9" class="kk" text-anchor="middle">DEVELOPMENT</text>
+<text x="112.0" y="69.0" class="nm" text-anchor="middle">Dev root key</text>
+<text x="112.0" y="90.9" class="sl" text-anchor="middle">disabled in OTP at EOL</text>
+<rect x="928" y="16" width="224" height="96" rx="6" class="pm"/>
+<rect x="928" y="16" width="224" height="96" rx="6" class="ext"/>
+<text x="1040.0" y="43.9" class="kk" text-anchor="middle">SEPARATE DOMAINS</text>
+<text x="1040.0" y="69.0" class="nm" text-anchor="middle">UDS 0x29 · SecOC · TLS</text>
+<text x="1040.0" y="90.9" class="sl" text-anchor="middle">own keys, own owners</text>
+<rect x="96" y="176" width="224" height="88" rx="6" class="pm"/>
+<rect x="96" y="176" width="224" height="88" rx="6" class="box"/>
+<text x="208.0" y="199.9" class="kk" text-anchor="middle">FAMILY A</text>
+<text x="208.0" y="225.0" class="nm" text-anchor="middle">Code-signing key</text>
+<text x="208.0" y="246.9" class="sl" text-anchor="middle">signed by root</text>
+<rect x="464" y="176" width="224" height="88" rx="6" class="pm"/>
+<rect x="464" y="176" width="224" height="88" rx="6" class="box"/>
+<text x="576.0" y="199.9" class="kk" text-anchor="middle">FAMILY B</text>
+<text x="576.0" y="225.0" class="nm" text-anchor="middle">Code-signing key</text>
+<text x="576.0" y="246.9" class="sl" text-anchor="middle">revocable on its own</text>
+<rect x="832" y="176" width="224" height="88" rx="6" class="pm"/>
+<rect x="832" y="176" width="224" height="88" rx="6" class="box"/>
+<text x="944.0" y="199.9" class="kk" text-anchor="middle">SUPPLIER C</text>
+<text x="944.0" y="225.0" class="nm" text-anchor="middle">Code-signing key</text>
+<text x="944.0" y="246.9" class="sl" text-anchor="middle">scoped to its ECUs</text>
+<rect x="96" y="328" width="224" height="64" rx="6" class="pm"/>
+<rect x="96" y="328" width="224" height="64" rx="6" class="store"/>
+<text x="208.0" y="354.0" class="nm" text-anchor="middle">Family A images</text>
+<text x="208.0" y="375.9" class="sl" text-anchor="middle">signed manifests</text>
+<rect x="464" y="328" width="224" height="64" rx="6" class="pm"/>
+<rect x="464" y="328" width="224" height="64" rx="6" class="store"/>
+<text x="576.0" y="354.0" class="nm" text-anchor="middle">Family B images</text>
+<text x="576.0" y="375.9" class="sl" text-anchor="middle">signed manifests</text>
+<rect x="832" y="328" width="224" height="64" rx="6" class="pm"/>
+<rect x="832" y="328" width="224" height="64" rx="6" class="store"/>
+<text x="944.0" y="354.0" class="nm" text-anchor="middle">Supplier C images</text>
+<text x="944.0" y="375.9" class="sl" text-anchor="middle">signed manifests</text>
+</svg></div></div>
+<footer class="s-foot"><span>TC4xx secure boot · signature over CMAC</span><span>13 / 18</span></footer>
+<details class="notes"><summary>Speaker notes</summary><div class="nb"><p>The root key is offline and rarely used; only its hash sits in OTP, and it signs nothing but code-signing keys. Code-signing keys are scoped per ECU family or supplier, so a compromise affects one family and can be revoked without touching the root.</p><p>Development and production keys are strictly separate, and dev keys are disabled in OTP at end of line. UDS 0x29 authentication certificates, SecOC keys and TLS keys stay out of this tree: different purpose, lifecycle and owners.</p></div></details>
+</section>
+<section class="slide " id="s14" aria-label="Slide 14: Reserve the OTP layout on day one.">
+<header class="s-head"><p class="kicker">Key management · OTP</p><h2>Reserve the OTP layout on day one.</h2></header>
+<div class="s-body">
+<div class="cols c-otp">
+ <div class="otp" role="table" aria-label="Proposed OTP layout">
+  <div class="row" role="row"><span class="r" role="cell">Anchor 0</span><span class="v" role="cell">ECDSA root key hash</span><span class="s" role="cell">active at SOP</span></div>
+  <div class="row acc" role="row"><span class="r" role="cell">Anchor 1</span><span class="v" role="cell">ML-DSA root key hash</span><span class="s" role="cell">provisioned now, enforced later</span></div>
+  <div class="row res" role="row"><span class="r" role="cell">Anchor 2–3</span><span class="v" role="cell">Reserved root slots</span><span class="s" role="cell">rotation and recovery</span></div>
+  <div class="row" role="row"><span class="r" role="cell">Revocation</span><span class="v" role="cell">Key revocation counter</span><span class="s" role="cell">counts up only</span></div>
+  <div class="row" role="row"><span class="r" role="cell">Anti-rollback</span><span class="v" role="cell">Image version counter</span><span class="s" role="cell">checked at flashing</span></div>
+  <div class="row" role="row"><span class="r" role="cell">Boot policy</span><span class="v" role="cell">ECDSA → dual → ML-DSA</span><span class="s" role="cell">one-way upgrade</span></div>
+  <div class="row" role="row"><span class="r" role="cell">Lifecycle</span><span class="v" role="cell">Dev keys off · write-protect</span><span class="s" role="cell">set at end of line</span></div>
+ </div>
+ <div class="reads">
+  <div><p class="mono">Immutable, not secret</p><p>Anchors are public. What matters is that nobody can change them after end of line.</p></div>
+  <div><p class="mono">One direction only</p><p>Every field that changes in the field moves one way: counters up, policy toward PQC.</p></div>
+  <div><p class="mono">Budget for change</p><p>Expect at least one key rotation in a 15+ year life, plus the ECDSA to ML-DSA switch.</p></div>
+  <p class="note">Proposed layout. Slot count and sizes to be fixed against the HSM's OTP map.</p>
+ </div>
+</div></div>
+<footer class="s-foot"><span>TC4xx secure boot · signature over CMAC</span><span>14 / 18</span></footer>
+<details class="notes"><summary>Speaker notes</summary><div class="nb"><p>OTP decisions cannot be fixed later in the field, so they have to be made before SOP. The proposal: anchors for ECDSA and ML-DSA both populated, two reserved slots for rotation, a revocation counter, the anti-rollback counter, a one-way boot policy, and lifecycle bits that disable dev keys and write-protect at end of line.</p><p>This layout is a proposal derived from the requirements; the exact slot count and sizes depend on the TC4xx HSM's OTP map.</p></div></details>
+</section>
+<section class="slide " id="s15" aria-label="Slide 15: ML-DSA becomes a policy switch, not a field OTP change.">
+<header class="s-head"><p class="kicker">Lifecycle · PQC readiness</p><h2>ML-DSA becomes a policy switch, not a field OTP change.</h2></header>
+<div class="s-body">
+<ol class="tl">
+ <li><p class="mono">Now · SOP</p><h3>ECDSA enforced</h3><p>Both anchors in OTP. Crypto-agile verifier shipped.</p></li>
+ <li><p class="mono">Transition</p><h3>Dual signature</h3><p>Backend signs each manifest with ECDSA and ML-DSA. ML-DSA checked where the budget allows.</p></li>
+ <li class="acc"><p class="mono">Policy switch</p><h3>ML-DSA enforced</h3><p>One-way policy update. No OTP change on vehicles in the field.</p></li>
+ <li><p class="mono">Through life</p><h3>Rotate and retire</h3><p>Rotate code-signing keys via reserved slots. Disable dev keys at end of line.</p></li>
+</ol></div>
+<footer class="s-foot"><span>TC4xx secure boot · signature over CMAC</span><span>15 / 18</span></footer>
+<details class="notes"><summary>Speaker notes</summary><div class="nb"><p>Because both anchors exist from day one, the move to ML-DSA is a signed policy update, not a hardware or OTP change on vehicles already in the field.</p><p>In the transition phase the backend signs every manifest twice. The policy can then require ECDSA only, both, or ML-DSA only, and can only move forward. Separately, plan for at least one code-signing key rotation during the vehicle life, using the reserved slots or the revocation counter.</p></div></details>
+</section>
+<section class="slide " id="s16" aria-label="Slide 16: Where the hybrid stays, and what it then needs.">
+<header class="s-head"><p class="kicker">Scope · exceptions</p><h2>Where the hybrid stays, and what it then needs.</h2></header>
+<div class="s-body">
+<div class="cols c-hyb">
+ <div class="card"><p class="mono">ECU class A</p><h3>SHE-class HSMs</h3><p>For example TC3xx. No ECC or SHA acceleration, so signature verification at every boot is too slow.</p></div>
+ <div class="card"><p class="mono">ECU class B</p><h3>TC4xx outside the budget</h3><p>Classes where the measured delta misses the startup budget, even with staged verification.</p></div>
+ <div class="gate"><p class="mono">If the hybrid stays, control the gate</p>
+  <ul>
+   <li>Recompute the CMAC only right after a successful signature check</li>
+   <li>No autonomous MAC learning by the HSM</li>
+   <li>Debug locked in production</li>
+   <li>UDS 0x27 cannot trigger a recompute alone</li>
+   <li>Argue both mechanisms in TARA and R156</li>
+  </ul></div>
+</div></div>
+<footer class="s-foot"><span>TC4xx secure boot · signature over CMAC</span><span>16 / 18</span></footer>
+<details class="notes"><summary>Speaker notes</summary><div class="nb"><p>The hybrid is acceptable for SHE-class parts like TC3xx and for any TC4xx class whose measurement genuinely fails the budget. It is then a known residual risk, not a default.</p><p>The controls on the right follow directly from the attack paths on slide 4: tie the recompute to a successful signature verification, forbid autonomous learning, lock debug, keep 0x27 from triggering a recompute on its own, and carry both mechanisms in the cybersecurity case.</p></div></details>
+</section>
+<section class="slide " id="s17" aria-label="Slide 17: Checklist before rollout.">
+<header class="s-head"><p class="kicker">Rollout</p><h2>Checklist before rollout.</h2></header>
+<div class="s-body"><div class="checklist"><div class="cgroup"><p class="mono">Measure</p><ul><li><input type="checkbox" id="chk1"><label for="chk1">AES-CMAC benchmark on TC4xx (2 MB) completed and delta computed</label></li><li><input type="checkbox" id="chk2"><label for="chk2">Startup budget headroom confirmed per ECU class</label></li><li><input type="checkbox" id="chk3"><label for="chk3">Algorithm decided per ECU class: ECDSA, ML-DSA or dual</label></li></ul></div><div class="cgroup"><p class="mono">Keys and OTP</p><ul><li><input type="checkbox" id="chk4"><label for="chk4">Public key anchor location and write protection defined</label></li><li><input type="checkbox" id="chk5"><label for="chk5">Root and code-signing key hierarchy defined, including per-family scope</label></li><li><input type="checkbox" id="chk6"><label for="chk6">Revocation mechanism (key slots or counter) defined in the OTP layout</label></li><li><input type="checkbox" id="chk7"><label for="chk7">Dev key disablement at end of line defined</label></li><li><input type="checkbox" id="chk8"><label for="chk8">Anti-rollback counter checked at flashing</label></li></ul></div><div class="cgroup"><p class="mono">Process</p><ul><li><input type="checkbox" id="chk9"><label for="chk9">Backend signing HSM, access control and audit logging in place</label></li><li><input type="checkbox" id="chk10"><label for="chk10">TARA updated for the new boot chain</label></li></ul></div><p class="note" id="chk-count" aria-live="polite">0 of 10 done</p></div></div>
+<footer class="s-foot"><span>TC4xx secure boot · signature over CMAC</span><span>17 / 18</span></footer>
+<details class="notes"><summary>Speaker notes</summary><div class="nb"><p>Ten items in three groups. The first group is the measurement and decision work; nothing else should be finalised until the CMAC benchmark and the per-class budgets are in. The OTP items have to be closed before SOP because they cannot be changed in the field.</p><p>Ticks on this slide are saved in your browser only.</p></div></details>
+</section>
+<section class="slide " id="s18" aria-label="Slide 18: Open questions and what each one decides.">
+<header class="s-head"><p class="kicker">Next</p><h2>Open questions and what each one decides.</h2></header>
+<div class="s-body">
+<div class="tbl-wrap"><table class="oq">
+<thead><tr><th>Open question</th><th>What the answer decides</th></tr></thead>
+<tbody>
+<tr><td>AES-CMAC throughput on TC4xx for 2 MB?</td><td>The delta, and with it every per-class decision.</td></tr>
+<tr><td>Startup time budget per ECU class?</td><td>Whether the delta fits, and ECDSA vs ML-DSA vs dual.</td></tr>
+<tr><td>Any TC4xx ECU class with images much larger than 2 MB?</td><td>Whether the delta grows with size, and where staged verification is needed.</td></tr>
+<tr><td>Which ECUs remain on TC3xx or SHE-class HSMs?</td><td>The size of the remaining hybrid fleet and its gate controls.</td></tr>
+</tbody></table></div>
+<p class="closing">Next step: run the CMAC benchmark, collect budgets per ECU class, then apply the decision rule.</p></div>
+<footer class="s-foot"><span>TC4xx secure boot · signature over CMAC</span><span>18 / 18</span></footer>
+<details class="notes"><summary>Speaker notes</summary><div class="nb"><p>Four questions remain, and the first two drive everything. Once the CMAC number and the per-class budgets are known, the decision rule on slide 7 produces a result per class without further debate.</p><p>The image-size question tests the scaling assumption on slide 5. The TC3xx question sizes the part of the fleet that keeps the hybrid and needs the gate controls on slide 16.</p></div></details>
+</section>
+</div>
+</main>
+<aside class="npanel" id="npanel" hidden aria-label="Speaker notes"><p class="mono">Speaker notes</p><div id="ntext"></div></aside>
+</div>
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var deck = document.getElementById('deck');
+  var stage = document.getElementById('stage');
+  var ctr = document.getElementById('ctr');
+  var bar = document.getElementById('progbar');
+  var panel = document.getElementById('npanel');
+  var ntext = document.getElementById('ntext');
+  var ntoggle = document.getElementById('ntoggle');
+  var narrow = window.matchMedia('(max-width: 820px)');
+  var cur = 0;
+
+  function store(k, v) {
+    try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; }
+  }
+
+  function fit() {
+    if (narrow.matches) { deck.style.transform = ''; return; }
+    var s = Math.min(stage.clientWidth / 1280, stage.clientHeight / 720);
+    deck.style.transform = 'translate(-50%, -50%) scale(' + s + ')';
+  }
+
+  function show(n) {
+    cur = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, k) { s.classList.toggle('active', k === cur); });
+    ctr.textContent = (cur + 1) + ' / ' + slides.length;
+    bar.style.width = ((cur + 1) / slides.length * 100) + '%';
+    var nb = slides[cur].querySelector('.nb');
+    ntext.innerHTML = nb ? nb.innerHTML : '';
+    try { history.replaceState(null, '', '#' + slides[cur].id); } catch (e) {}
+  }
+
+  function setNotes(on) {
+    panel.hidden = !on;
+    ntoggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+    store('tc4xx-notes', on ? '1' : '0');
+    fit();
+  }
+
+  document.getElementById('prev').addEventListener('click', function () { show(cur - 1); });
+  document.getElementById('next').addEventListener('click', function () { show(cur + 1); });
+  ntoggle.addEventListener('click', function () { setNotes(panel.hidden); });
+
+  document.addEventListener('keydown', function (e) {
+    if (narrow.matches || e.altKey || e.ctrlKey || e.metaKey) return;
+    var t = e.target && e.target.tagName;
+    if (t === 'INPUT' && (e.key === ' ' || e.key === 'Enter')) return;
+    if (['ArrowRight', 'PageDown', ' '].indexOf(e.key) > -1) { e.preventDefault(); show(cur + 1); }
+    else if (['ArrowLeft', 'PageUp'].indexOf(e.key) > -1) { e.preventDefault(); show(cur - 1); }
+    else if (e.key === 'Home') { e.preventDefault(); show(0); }
+    else if (e.key === 'End') { e.preventDefault(); show(slides.length - 1); }
+    else if (e.key === 'n' || e.key === 'N') { setNotes(panel.hidden); }
+  });
+
+  // checklist: per-viewer ticks
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('.checklist input[type=checkbox]'));
+  var count = document.getElementById('chk-count');
+  var saved = {};
+  try { saved = JSON.parse(store('tc4xx-checks') || '{}') || {}; } catch (e) { saved = {}; }
+  function tally() {
+    var n = boxes.filter(function (b) { return b.checked; }).length;
+    count.textContent = n + ' of ' + boxes.length + ' done';
+  }
+  boxes.forEach(function (b) {
+    b.checked = !!saved[b.id];
+    b.addEventListener('change', function () {
+      saved[b.id] = b.checked;
+      store('tc4xx-checks', JSON.stringify(saved));
+      tally();
+    });
+  });
+  tally();
+
+  var start = 0;
+  var m = /^#(s\d+)$/.exec(location.hash || '');
+  if (m) { slides.forEach(function (s, k) { if (s.id === m[1]) start = k; }); }
+  show(start);
+  if (store('tc4xx-notes') === '1') setNotes(true);
+  fit();
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(stage);
+  window.addEventListener('resize', fit);
+  if (narrow.addEventListener) narrow.addEventListener('change', fit);
+})();
+
+</script>
+</body>
+</html>

@@ -363,8 +363,33 @@ def d_tree():
                "manifests; a separate development root and separate diagnostic, SecOC and TLS key domains sit outside the tree.",
                "\n".join(b))
 
+
+def d_dice():
+    W, Hh = 640, 400
+    b = []
+    b.append(arrow("M140,64 V120"))
+    b.append(vlabel(140, 92, "KDF · LAYER 0"))
+    b.append(arrow("M140,184 V240"))
+    b.append(vlabel(140, 212, "KDF · LAYER 1"))
+    b.append(arrow("M280,152 H360"))
+    b.append(arrow("M280,272 H360"))
+    b.append(arrow("M500,184 V240"))
+    b.append(vlabel(500, 212, "SIGNS CERT"))
+    b.append(arrow("M500,304 V336", "acc"))
+    b.append(node(0, 0, 280, 64, "store", "Device secret", "unique per ECU · locked after read", "HSM ONLY"))
+    b.append(node(0, 120, 280, 64, "box", "CDI · layer 0", "HSM boot stage"))
+    b.append(node(0, 240, 280, 64, "box", "CDI · layer 1", "bootloader / application"))
+    b.append(node(360, 120, 280, 64, "focal", "DeviceID key pair", "stable · certified at end of line"))
+    b.append(node(360, 240, 280, 64, "box", "Alias key pair", "changes with firmware"))
+    b.append(node(360, 336, 280, 56, "ext", "OEM backend verifier", "checks chain + measurements"))
+    b.append(callout(0, 352, ["Each layer's key depends on", "the code measured below it."]))
+    return svg("dice", W, Hh, "DICE layering on the ECU",
+               "A per-ECU device secret is combined with layer measurements into compound device identifiers, which "
+               "derive a stable DeviceID key and a firmware-dependent alias key that attests to the OEM backend.",
+               "\n".join(b))
+
 # ---------------------------------------------------------------- slides
-TOTAL = 18
+TOTAL = 20
 slides = []
 
 def slide(sid, kicker, title, body, notes, lede=None, cls=""):
@@ -569,6 +594,36 @@ slide("s18", "Next", "Open questions and what each one decides.", '''
 </tbody></table></div>
 <p class="closing">Next step: run the CMAC benchmark, collect budgets per ECU class, then apply the decision rule.</p>''',
       '''<p>Four questions remain, and the first two drive everything. Once the CMAC number and the per-class budgets are known, the decision rule on slide 7 produces a result per class without further debate.</p><p>The image-size question tests the scaling assumption on slide 5. The TC3xx question sizes the part of the fleet that keeps the hybrid and needs the gate controls on slide 16.</p>''')
+
+
+slide("s19", "Appendix · DICE", "Signing keys are per family. Per-ECU keys come from DICE.", f'''
+<div class="cols c-dice">
+ <div class="tbl-wrap"><table class="dq">
+ <thead><tr><th></th><th>Secure boot</th><th>DICE</th></tr></thead>
+ <tbody>
+ <tr><td>Question</td><td>May this code run?</td><td>What exactly runs on this ECU?</td></tr>
+ <tr><td>Checked by</td><td>The ECU itself, enforced</td><td>A remote party: backend, gateway</td></tr>
+ <tr><td>Keys</td><td>One code-signing key per family, in the backend</td><td>Device secret and key pairs per ECU, created on the ECU</td></tr>
+ </tbody></table>
+ <p class="note">Secure boot stops bad code from running. DICE lets the ECU prove what it booted. They fit together.</p></div>
+ <div class="fig">{d_dice()}</div>
+</div>''', '''<p>In the recommended model the code-signing private key is not per ECU. It belongs to an ECU family or supplier and stays in the backend HSM; every ECU of the family holds the same public anchor. The only per-ECU secret in the old design was the hybrid's CMAC key, which we remove.</p><p>Per-ECU private keys belong to device identity and attestation. With DICE, a device secret unique to each ECU is combined with measurements of each boot layer into compound device identifiers (CDIs). From them the ECU derives a stable DeviceID key, certified once at end of line, and an alias key that changes when the firmware changes. The backend checks that certificate chain to learn exactly what the ECU booted.</p>''')
+
+slide("s20", "Appendix · DICE on TC4xx", "Adding DICE to the TC4xx boot chain.", '''
+<div class="cols c-dice2">
+ <ol class="steps">
+  <li><b>HSM is the DICE root.</b> Its boot stage reads the per-ECU device secret from OTP or a protected slot, derives the first CDI, then locks the secret until reset.</li>
+  <li><b>Verify first, then measure.</b> Reuse the hash from signature verification as the measurement. DICE adds almost no hashing time.</li>
+  <li><b>Measure signer and version for derivation.</b> The identity stays stable across signed updates. The exact image hash still goes into the alias certificate.</li>
+  <li><b>Defer alias key generation.</b> Attestation is not needed before the first CAN message, so the startup budget is untouched.</li>
+  <li><b>Certify DeviceID at end of line</b> with a separate device-identity CA, outside the code-signing tree.</li>
+ </ol>
+ <div class="side">
+  <div class="card"><p class="mono">What it enables</p><ul><li>Attestation before OTA or diagnostic unlock</li><li>SecOC keys and TLS certs issued only to healthy ECUs</li><li>Clone detection through a certified identity</li><li>Hardware-bound UDS 0x29 authentication</li></ul></div>
+  <div class="card"><p class="mono">Plan changes</p><ul><li>OTP: device-secret slot with lock after read</li><li>Backend: device-identity CA with per-device revocation</li><li>End of line: DeviceID export and certificate issue</li><li>TARA: attestation as its own claim</li></ul></div>
+  <p class="note">To confirm with Infineon: PUF availability as the device secret source, and lock-after-read support in the HSM firmware. Call the DICE secret “device secret” in documents to avoid a clash with UDS diagnostics.</p>
+ </div>
+</div>''', '''<p>The HSM boot stage is the natural DICE root: it already owns the first measurement because it hashes the image to verify the signature. Reusing that hash keeps DICE cheap at boot, and moving the alias key generation after the first message keeps the startup budget from the decision rule intact.</p><p>Deriving the identity from signer and security version, not the raw hash, keeps keys and sealed data stable across legitimate updates. The device-identity CA is a new backend domain with its own revocation, alongside 0x29, SecOC and TLS.</p>''')
 
 assert len(slides) == TOTAL, len(slides)
 

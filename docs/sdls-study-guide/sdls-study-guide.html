@@ -1,0 +1,1239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SDLS Study Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: sticky course rail on the left, one reading column of modules; rail folds to the top under 960px. */
+:root{
+  --paper:#f5f5f5; --paper-2:#ececec; --node:#ffffff;
+  --ink:#2d3142; --muted:#4f5d75; --soft:#6f7891;
+  --rule:rgba(45,49,66,.12); --rule-solid:#bfc0c0;
+  --accent:#eb6c36; --accent-text:#b4471a; --accent-tint:rgba(235,108,54,.08);
+  --accent-05:rgba(235,108,54,.05); --accent-50:rgba(235,108,54,.5);
+  --link:#2e5aa8; --link-tint:rgba(46,90,168,.08); --link-50:rgba(46,90,168,.45);
+  --ok:#2f7d4f; --ok-tint:rgba(47,125,79,.10); --bad:#b23a3a; --bad-tint:rgba(178,58,58,.08);
+  --ink-02:rgba(45,49,66,.02); --ink-03:rgba(45,49,66,.03); --ink-05:rgba(45,49,66,.05);
+  --ink-10:rgba(45,49,66,.10); --ink-20:rgba(45,49,66,.20); --ink-30:rgba(45,49,66,.30);
+  --f-display:'Instrument Serif',Georgia,'Times New Roman',serif;
+  --f-sans:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'Geist Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#2d3142; --paper-2:#393e53; --node:#353a4e;
+    --ink:#f5f5f5; --muted:#bfc0c0; --soft:#9aa3b6;
+    --rule:rgba(245,245,245,.12); --rule-solid:rgba(191,192,192,.25);
+    --accent:#f08a59; --accent-text:#f4a27a; --accent-tint:rgba(240,138,89,.10);
+    --accent-05:rgba(240,138,89,.06); --accent-50:rgba(240,138,89,.5);
+    --link:#6a95d8; --link-tint:rgba(106,149,216,.12); --link-50:rgba(106,149,216,.5);
+    --ok:#6cc08f; --ok-tint:rgba(108,192,143,.14); --bad:#ef8a8a; --bad-tint:rgba(239,138,138,.12);
+    --ink-02:rgba(245,245,245,.02); --ink-03:rgba(245,245,245,.03); --ink-05:rgba(245,245,245,.05);
+    --ink-10:rgba(245,245,245,.10); --ink-20:rgba(245,245,245,.20); --ink-30:rgba(245,245,245,.30);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#2d3142; --paper-2:#393e53; --node:#353a4e;
+  --ink:#f5f5f5; --muted:#bfc0c0; --soft:#9aa3b6;
+  --rule:rgba(245,245,245,.12); --rule-solid:rgba(191,192,192,.25);
+  --accent:#f08a59; --accent-text:#f4a27a; --accent-tint:rgba(240,138,89,.10);
+  --accent-05:rgba(240,138,89,.06); --accent-50:rgba(240,138,89,.5);
+  --link:#6a95d8; --link-tint:rgba(106,149,216,.12); --link-50:rgba(106,149,216,.5);
+  --ok:#6cc08f; --ok-tint:rgba(108,192,143,.14); --bad:#ef8a8a; --bad-tint:rgba(239,138,138,.12);
+  --ink-02:rgba(245,245,245,.02); --ink-03:rgba(245,245,245,.03); --ink-05:rgba(245,245,245,.05);
+  --ink-10:rgba(245,245,245,.10); --ink-20:rgba(245,245,245,.20); --ink-30:rgba(245,245,245,.30);
+  color-scheme:dark;
+}
+
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font:400 16px/1.6 var(--f-sans);margin:0;padding-inline:16px}
+.defs{position:absolute;width:0;height:0;overflow:hidden}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:48px;max-width:1240px;margin:0 auto}
+.side{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;max-height:100vh;overflow:auto;padding-block:32px;display:flex;flex-direction:column;gap:16px;box-sizing:border-box}
+.main{min-width:0;padding-block:32px 64px;max-width:900px}
+
+.eyebrow,.mono{font:500 12px var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--soft);margin:0}
+.side-title{font:400 28px/1.1 var(--f-display);margin:0}
+h1,h2,h3{text-wrap:balance;margin:0}
+h1{font:400 56px/1.02 var(--f-display);margin:12px 0 16px;letter-spacing:-.01em}
+h2{font:400 40px/1.08 var(--f-display);margin:10px 0 16px}
+h3{font:600 18px/1.3 var(--f-sans);margin:32px 0 8px}
+p{margin:0 0 12px;max-width:70ch}
+.lead{font-size:18px;color:var(--muted)}
+.note{font-size:14px;color:var(--soft)}
+code{font:500 14px var(--f-mono);background:var(--ink-05);padding:1px 5px;border-radius:4px}
+ul,ol{max-width:70ch}
+
+/* rail */
+.mastery{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--rule);border-radius:8px;background:var(--node)}
+.meter{display:grid;grid-template-columns:1fr auto;gap:4px 8px;align-items:baseline}
+.ml{font-size:13px;color:var(--muted)}
+.mv{font:600 14px var(--f-mono);font-variant-numeric:tabular-nums}
+.meter .bar{grid-column:1/-1;height:6px;border-radius:3px;background:var(--ink-10);overflow:hidden}
+.meter .bar span{display:block;height:100%;width:0;transition:width .3s ease}
+.meter.s .bar span{background:var(--accent)} .meter.s .mv{color:var(--accent-text)}
+.meter.f .bar span{background:var(--link)} .meter.f .mv{color:var(--link)}
+.mnote{font-size:12px;color:var(--soft);margin:0}
+.toc{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.toc a{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:6px;color:var(--ink);text-decoration:none;font-size:14px}
+.toc a:hover{background:var(--ink-05)}
+.toc a.cur{background:var(--ink-05);font-weight:600}
+.toc .nn{font:500 12px var(--f-mono);color:var(--soft);width:20px}
+.toc .dot{width:10px;height:10px;border-radius:50%;border:1.2px solid var(--rule-solid);flex:none;box-sizing:border-box}
+.toc a.done .dot{background:var(--ok);border-color:var(--ok)}
+.toc a.part .dot{border-color:var(--ok);background:linear-gradient(90deg,var(--ok) 50%,transparent 50%)}
+
+/* hero + modules */
+.hero{padding-bottom:32px;border-bottom:1px solid var(--rule)}
+.goals{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.goals>div{padding:16px;border:1px solid var(--rule);border-radius:8px;background:var(--node)}
+.goals p{margin:8px 0 0;font-size:15px}
+.mod{padding-block:48px 24px;border-bottom:1px solid var(--rule);scroll-margin-top:8px}
+.mod-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.tags{display:flex;gap:6px}
+.tag{font:500 11px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:4px;border:1px solid}
+.tag.f{color:var(--link);border-color:var(--link-50);background:var(--link-tint)}
+.tag.s{color:var(--accent-text);border-color:var(--accent-50);background:var(--accent-tint)}
+
+.fig{margin:24px 0}
+.scroll{overflow-x:auto}
+.fig svg{width:100%;height:auto;display:block;min-width:560px}
+figcaption{font:italic 400 16px var(--f-display);color:var(--muted);margin-top:8px}
+.tbl{overflow-x:auto;margin:16px 0}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th{font:500 11px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--soft);text-align:left;padding:8px 12px;border-bottom:1px solid var(--rule-solid)}
+td{padding:9px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+td:first-child{color:var(--muted)}
+
+.lenses{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}
+.lens{border-radius:8px;padding:14px 18px;min-width:0}
+.lens.func{background:var(--link-tint);border:1px solid var(--link-50)}
+.lens.sec{background:var(--accent-05);border:1px dashed var(--accent-50)}
+.lens.func .eyebrow{color:var(--link)} .lens.sec .eyebrow{color:var(--accent-text)}
+.lens ul{margin:8px 0 0;padding-left:18px;font-size:14.5px;line-height:1.5}
+.lens li+li{margin-top:4px}
+
+/* svg diagram tokens */
+.fig-svg text{font-family:var(--f-sans)}
+.pm{fill:var(--paper)}
+.box{fill:var(--node);stroke:var(--ink);stroke-width:1}
+.focal{fill:var(--accent-tint);stroke:var(--accent);stroke-width:1.2}
+.store{fill:var(--ink-05);stroke:var(--muted);stroke-width:1}
+.ext{fill:var(--ink-03);stroke:var(--ink-30);stroke-width:1}
+.opt{fill:var(--ink-02);stroke:var(--ink-30);stroke-width:1;stroke-dasharray:4 3}
+.sec{fill:var(--accent-05);stroke:var(--accent-50);stroke-width:1;stroke-dasharray:4 4}
+.zone{fill:var(--ink-02);stroke:var(--ink-10);stroke-width:.8}
+.ar{fill:none;stroke:var(--muted);stroke-width:1.2}
+.ar.acc{stroke:var(--accent)}
+.ar.dsh{stroke-dasharray:5 4}
+.mk-d{fill:var(--muted)} .mk-a{fill:var(--accent)}
+.mk{fill:var(--paper)}
+.nm{font:600 16px var(--f-sans);fill:var(--ink)}
+.sl{font:400 12px var(--f-mono);fill:var(--muted)}
+.kk,.eb{font:500 12px var(--f-mono);letter-spacing:.14em;fill:var(--soft)}
+.al{font:400 12px var(--f-mono);letter-spacing:.06em;fill:var(--soft)}
+.co{font:italic 400 16px var(--f-display);fill:var(--muted)}
+.hl{transition:opacity .2s ease}
+svg.tracing .hl{opacity:.22}
+svg.tracing .hl.hot{opacity:1}
+svg.tracing .hl.hot .box,svg.tracing .hl.hot .ext,svg.tracing .hl.hot .store{stroke:var(--accent);stroke-width:1.6}
+svg.tracing .hl.hot .ar{stroke:var(--accent);stroke-width:1.6}
+
+/* simulators */
+.sim{border:1px solid var(--rule-solid);border-radius:8px;background:var(--node);padding:16px 18px;margin:16px 0;display:flex;flex-direction:column;gap:14px}
+.ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.ctl.grid{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-end}
+.ctl label{display:flex;flex-direction:column;gap:4px;font:500 12px var(--f-mono);letter-spacing:.06em;color:var(--muted)}
+.ctl label.sw{flex-direction:row;align-items:center;gap:8px;font-size:14px;font-family:var(--f-sans);letter-spacing:0;color:var(--ink)}
+select,input[type=number]{font:400 15px var(--f-sans);color:var(--ink);background:var(--paper);border:1px solid var(--rule-solid);border-radius:6px;padding:6px 8px;min-width:0}
+input[type=number]{width:84px}
+input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px}
+.btn,.seg button{font:500 14px var(--f-sans);color:var(--ink);background:var(--paper);border:1px solid var(--rule-solid);border-radius:6px;padding:7px 12px;cursor:pointer}
+.btn:hover,.seg button:hover{border-color:var(--muted)}
+.btn.warn{border-color:var(--accent-50);color:var(--accent-text)}
+.btn.ghost{background:transparent}
+.btn.small{font-size:13px;padding:5px 10px;align-self:flex-start}
+.seg{gap:0}
+.seg button{border-radius:0;margin-left:-1px}
+.seg button:first-child{border-radius:6px 0 0 6px;margin-left:0}
+.seg button:last-child{border-radius:0 6px 6px 0}
+.seg.wrap{gap:6px}
+.seg.wrap button{border-radius:6px;margin-left:0}
+.seg button.on,.seg button[aria-selected="true"]{background:var(--accent-tint);border-color:var(--accent);color:var(--accent-text);position:relative;z-index:1}
+button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.simnote{font-size:14px;color:var(--muted);margin:0}
+.stepno{font:500 13px var(--f-mono);color:var(--soft);font-variant-numeric:tabular-nums}
+.steptext{margin:0;font-size:15.5px;min-height:3em}
+
+/* frame bars */
+.framebar{display:flex;width:100%;min-height:76px;border:1px solid var(--rule-solid);border-radius:6px;overflow:hidden}
+.fseg{position:relative;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px;padding:6px 4px;min-width:0;border-left:1px solid var(--rule);font-size:12px;text-align:center;line-height:1.2;background:var(--paper)}
+.fseg:first-child{border-left:0}
+.fseg b{font-weight:600;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.fseg i{font:normal 400 11px var(--f-mono);color:var(--soft)}
+.fseg.sdls{background:var(--accent-tint)}
+.fseg.enc{background-image:repeating-linear-gradient(135deg,var(--accent-tint) 0 6px,transparent 6px 12px)}
+.fseg.mac::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--link)}
+.fseg.macp::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:repeating-linear-gradient(90deg,var(--link) 0 6px,transparent 6px 10px)}
+.fseg.never{color:var(--soft);background:var(--ink-05)}
+.legend-row{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--muted)}
+.lk{display:inline-flex;align-items:center;gap:6px}
+.lk::before{content:"";width:18px;height:12px;border-radius:2px;border:1px solid var(--rule-solid)}
+.lk.enc::before{background-image:repeating-linear-gradient(135deg,var(--accent-50) 0 3px,transparent 3px 6px)}
+.lk.mac::before{border:0;border-bottom:4px solid var(--link);height:8px}
+.lk.macp::before{border:0;height:8px;border-bottom:4px dashed var(--link)}
+.lk.never::before{background:var(--ink-10)}
+.lk.on::before{background:var(--link-tint);border-color:var(--link)}
+.lk.off::before{background:repeating-linear-gradient(90deg,var(--ink-10) 0 2px,transparent 2px 4px)}
+.lk.lock::before{border:1.5px dashed var(--muted)}
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.checks li{padding-left:22px;position:relative}
+.checks li::before{position:absolute;left:0;top:0;font-weight:700}
+.checks li.ok::before{content:"✓";color:var(--ok)}
+.checks li.bad{color:var(--bad)} .checks li.bad::before{content:"✕";color:var(--bad)}
+.checks li.info::before{content:"·";color:var(--soft)}
+
+/* SA db */
+.sa-list{display:flex;flex-wrap:wrap;gap:8px}
+.sa-list button{font:500 13px var(--f-mono);text-align:left;background:var(--paper);border:1px solid var(--rule-solid);border-radius:6px;padding:8px 12px;cursor:pointer;color:var(--ink);display:flex;flex-direction:column;gap:2px}
+.sa-list button span{font:400 12px var(--f-sans);color:var(--muted)}
+.sa-list button[aria-selected="true"]{border-color:var(--accent);background:var(--accent-tint)}
+.sa-detail dl{display:grid;grid-template-columns:minmax(140px,auto) 1fr;gap:6px 16px;margin:0;font-size:14.5px}
+.sa-detail dt{font:500 12px var(--f-mono);color:var(--soft);letter-spacing:.04em;padding-top:2px}
+.sa-detail dd{margin:0}
+.sa-detail .why{margin-top:10px;font-size:14px;color:var(--muted)}
+.flow4{counter-reset:f;list-style:none;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:none}
+.flow4 li{counter-increment:f;padding:12px 14px;border-top:2px solid var(--ink-20);font-size:14.5px}
+.flow4 li::before{content:counter(f,decimal-leading-zero);display:block;font:500 12px var(--f-mono);color:var(--soft);margin-bottom:4px}
+.flow4 li:last-child{border-top-color:var(--accent)}
+
+/* aead */
+.aead{display:grid;grid-template-columns:3fr 4fr 1fr;gap:0;margin:8px 0 16px;font-size:13px}
+.aead>div{display:flex;border:1px solid var(--rule-solid);min-height:44px}
+.aead>div+div{border-left:0}
+.aead span{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:4px;border-left:1px solid var(--rule)}
+.aead span:first-child{border-left:0}
+.seg-a{background:var(--link-tint)}
+.seg-p{background-image:repeating-linear-gradient(135deg,var(--accent-tint) 0 6px,transparent 6px 12px)}
+.seg-t{background:var(--ink-05)}
+.aead-l{margin:6px 0 0;font-size:13.5px;grid-column:1/-1}
+.aead-l::before{content:"";display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:8px;vertical-align:-1px}
+.aead-l.a::before{background:var(--link)} .aead-l.p::before{background:var(--accent)}
+
+/* process status */
+.status{display:flex;flex-direction:column;gap:4px;padding:12px 14px;border-radius:6px;background:var(--paper)}
+.status .code{font:600 14px var(--f-mono)}
+.status.ok{background:var(--ok-tint)} .status.ok .code{color:var(--ok)}
+.status.bad{background:var(--bad-tint)} .status.bad .code{color:var(--bad)}
+.status .why{font-size:14.5px;color:var(--ink)}
+
+/* mask */
+.maskrow{display:flex;flex-wrap:wrap;gap:6px}
+.mf{font:500 13px var(--f-sans);border:1px solid var(--rule-solid);border-radius:6px;padding:7px 10px;background:var(--paper);color:var(--ink);cursor:pointer;display:flex;flex-direction:column;gap:2px;text-align:left}
+.mf small{font:400 11px var(--f-mono);color:var(--soft)}
+.mf.on{background:var(--link-tint);border-color:var(--link)}
+.mf.off{background:repeating-linear-gradient(90deg,var(--ink-05) 0 2px,transparent 2px 6px)}
+.mf.never{background:var(--ink-10);color:var(--soft);text-decoration:line-through}
+.mf.lock{border-style:dashed}
+.mf.lock small::after{content:" · fixed"}
+.mf.sel{outline:2px solid var(--accent);outline-offset:1px}
+.mk-info{font-size:14.5px;padding:10px 12px;border-left:3px solid var(--accent);background:var(--accent-05)}
+
+/* replay */
+.rp-state{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.rp-state div{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:6px;background:var(--paper)}
+.rp-state b{font:600 22px var(--f-mono);font-variant-numeric:tabular-nums}
+.numline{display:flex;gap:3px;overflow-x:auto;padding-bottom:4px}
+.nc{flex:none;width:34px;height:34px;display:grid;place-items:center;font:500 12px var(--f-mono);border-radius:4px;background:var(--paper);color:var(--soft);border:1px solid var(--rule)}
+.nc.used{background:var(--ink-10);color:var(--muted)}
+.nc.stored{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.nc.win{background:var(--ok-tint);color:var(--ok);border-color:var(--ok)}
+.nc.tx{box-shadow:inset 0 -3px 0 var(--accent)}
+.log{list-style:none;margin:0;padding:0;max-height:200px;overflow:auto;display:flex;flex-direction:column-reverse;gap:4px;font-size:14px}
+.log li{padding:6px 10px;border-radius:4px;background:var(--paper);display:flex;gap:10px}
+.log li .k{font:600 12px var(--f-mono);min-width:72px}
+.log li.ok .k{color:var(--ok)} .log li.bad .k{color:var(--bad)} .log li.lost .k{color:var(--soft)}
+
+/* coverage */
+.chip{display:inline-block;font:500 12px var(--f-mono);padding:2px 8px;border-radius:4px}
+.chip.p{background:var(--ok-tint);color:var(--ok)}
+.chip.n{background:var(--bad-tint);color:var(--bad)}
+.chip.a{background:var(--link-tint);color:var(--link)}
+
+/* baseline */
+.base{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.bcard{border:1px solid var(--rule-solid);border-radius:8px;padding:16px;background:var(--node);min-width:0}
+.bcard h3{margin:6px 0 12px;font-size:16px}
+.bcard p{font-size:14px;color:var(--muted);margin:10px 0 0}
+.bytes{display:flex;gap:2px;margin-top:6px}
+.bytes span{display:flex;align-items:center;justify-content:center;height:30px;font:500 12px var(--f-mono);border-radius:3px;white-space:nowrap;overflow:hidden;padding:0 4px}
+.b-spi{background:var(--ink);color:var(--paper)}
+.b-iv{background:var(--accent-tint);border:1px solid var(--accent-50)}
+.b-sn{background:var(--link-tint);border:1px solid var(--link-50)}
+.b-mac{background:var(--ink-10);border:1px solid var(--rule-solid)}
+.bytes .gap{background:none}
+.ovh{margin:0;font-size:15.5px}
+.ovh b{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* pics */
+fieldset{border:1px solid var(--rule);border-radius:6px;padding:8px 12px 10px;display:flex;flex-wrap:wrap;gap:6px 14px;margin:0}
+legend{font:500 12px var(--f-mono);color:var(--soft);padding:0 4px}
+fieldset label{flex-direction:row!important;align-items:center;gap:6px!important;font:400 14px var(--f-sans)!important;color:var(--ink)!important;letter-spacing:0!important}
+.pics{font-size:14.5px}
+.pics ul{margin:6px 0 0;padding-left:18px}
+.pics .verdict{font-weight:600}
+.pics .verdict.ok{color:var(--ok)} .pics .verdict.bad{color:var(--bad)}
+
+/* quiz */
+.quiz{margin:28px 0 8px;padding:18px;border-radius:8px;background:var(--paper-2);display:flex;flex-direction:column;gap:18px}
+.qs{display:flex;flex-direction:column;gap:22px}
+.qi .qp{font-weight:600;margin:0 0 10px;display:flex;gap:10px;align-items:baseline}
+.qi .qp .qt{flex:none}
+.qo{display:flex;flex-direction:column;gap:6px}
+.qo button{font:400 15px/1.4 var(--f-sans);text-align:left;color:var(--ink);background:var(--node);border:1px solid var(--rule-solid);border-radius:6px;padding:9px 12px;cursor:pointer}
+.qo button:hover:not(:disabled){border-color:var(--muted)}
+.qo button.right{border-color:var(--ok);background:var(--ok-tint)}
+.qo button.wrong{border-color:var(--bad);background:var(--bad-tint)}
+.qo button:disabled{cursor:default}
+.qe{margin:8px 0 0;font-size:14.5px;padding:10px 12px;border-radius:6px;background:var(--node);border-left:3px solid var(--ok)}
+.qe.no{border-left-color:var(--bad)}
+.qe .ref{font:500 12px var(--f-mono);color:var(--soft);margin-left:6px}
+.qi .retry{margin-top:8px}
+.score{font:600 16px var(--f-mono);margin:0}
+
+.cheat{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.cheat>div{border:1px solid var(--rule);border-radius:8px;padding:14px;background:var(--node);min-width:0}
+.cheat ul{margin:8px 0 0;padding-left:18px;font-size:14px;line-height:1.5}
+.foot{padding-top:24px;font:400 12px var(--f-mono);color:var(--soft)}
+
+@media (max-width: 960px){
+  .layout{grid-template-columns:1fr;gap:0}
+  .side{position:static;max-height:none;padding-block:20px 8px;border-bottom:1px solid var(--rule)}
+  .toc{flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:4px}
+  .toc a{white-space:nowrap;border:1px solid var(--rule);font-size:13px}
+  .main{padding-block:8px 48px}
+}
+@media (max-width: 640px){
+  h1{font-size:40px} h2{font-size:30px}
+  .goals,.lenses,.base,.cheat,.rp-state{grid-template-columns:1fr}
+  .flow4{grid-template-columns:1fr 1fr}
+  .framebar{overflow-x:auto}
+  .fseg{min-width:56px}
+}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} .hl,.meter .bar span{transition:none} }
+
+</style>
+</head>
+<body>
+<svg class="defs" width="0" height="0" aria-hidden="true" focusable="false"><defs>
+<marker id="mk" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" class="mk-d"/></marker>
+<marker id="mk-acc" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" class="mk-a"/></marker>
+</defs></svg>
+<div class="layout">
+<nav class="side" aria-label="Course">
+ <p class="eyebrow">CCSDS 355.0-B-2 · study guide</p>
+ <p class="side-title">Space Data Link Security</p>
+ <div class="mastery">
+  <div class="meter s"><span class="ml">Security mastery</span><span class="mv" id="ms-s">0%</span><span class="bar"><span id="mb-s"></span></span></div>
+  <div class="meter f"><span class="ml">Functional mastery</span><span class="mv" id="ms-f">0%</span><span class="bar"><span id="mb-f"></span></span></div>
+  <p class="mnote">First-try answers across all checks and the exam.</p>
+ </div>
+ <ol class="toc"><li><a href="#m1" data-mod="m1"><span class="dot" aria-hidden="true"></span><span class="nn">01</span> Where SDLS fits</a></li><li><a href="#m2" data-mod="m2"><span class="dot" aria-hidden="true"></span><span class="nn">02</span> Security Associations</a></li><li><a href="#m3" data-mod="m3"><span class="dot" aria-hidden="true"></span><span class="nn">03</span> Security Header and Trailer</a></li><li><a href="#m4" data-mod="m4"><span class="dot" aria-hidden="true"></span><span class="nn">04</span> Sending: ApplySecurity</a></li><li><a href="#m5" data-mod="m5"><span class="dot" aria-hidden="true"></span><span class="nn">05</span> Receiving: ProcessSecurity</a></li><li><a href="#m6" data-mod="m6"><span class="dot" aria-hidden="true"></span><span class="nn">06</span> The authentication mask</a></li><li><a href="#m7" data-mod="m7"><span class="dot" aria-hidden="true"></span><span class="nn">07</span> Replay protection</a></li><li><a href="#m8" data-mod="m8"><span class="dot" aria-hidden="true"></span><span class="nn">08</span> What is covered, what is not</a></li><li><a href="#m9" data-mod="m9"><span class="dot" aria-hidden="true"></span><span class="nn">09</span> Threat model</a></li><li><a href="#m10" data-mod="m10"><span class="dot" aria-hidden="true"></span><span class="nn">10</span> Baseline modes</a></li><li><a href="#m11" data-mod="m11"><span class="dot" aria-hidden="true"></span><span class="nn">11</span> Management and conformance</a></li><li><a href="#exam" data-mod="exam"><span class="dot" aria-hidden="true"></span><span class="nn">✓</span> Final exam</a></li></ol>
+ <button type="button" class="btn ghost small" id="reset-all">Reset progress</button>
+</nav>
+<main class="main">
+<header class="hero">
+ <p class="eyebrow">Interactive course · 11 modules · about 60 minutes</p>
+ <h1>How the space link is secured</h1>
+ <p class="lead">A hands-on guide to the CCSDS Space Data Link Security protocol, Recommended Standard 355.0-B-2 (July 2022). Every module pairs what the protocol <em>does</em> with what it <em>protects against</em>, then checks that it stuck.</p>
+ <div class="goals">
+  <div><span class="tag f">Functional</span><p>Build a secured frame, configure an SA, trace ApplySecurity and ProcessSecurity, pick a baseline.</p></div>
+  <div><span class="tag s">Security</span><p>Explain what the MAC, mask and sequence window stop, and name every gap SDLS leaves open.</p></div>
+ </div>
+</header>
+<section class="mod" id="m1" aria-labelledby="m1-h">
+<div class="mod-head"><p class="eyebrow">Module 1 of 11</p><div class="tags"><span class="tag f">Functional</span></div></div>
+<h2 id="m1-h">Where SDLS fits</h2>
+
+<p class="lead">SDLS adds authentication, encryption or both to the contents of Transfer Frames on a space link. It is an extra service of the TM, TC, AOS and USLP protocols, applied inside the data link layer.</p>
+<figure class="fig"><div class="scroll"><svg class="fig-svg" viewBox="0 0 640 364" role="img" aria-labelledby="stack-title stack-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="stack-title">Where SDLS sits in the protocol stack</title>
+<desc id="stack-desc">SDLS sits inside the OSI data link layer, between the CCSDS Data Link Protocol sublayer and the Synchronization and Channel Coding sublayer.</desc>
+<rect x="0" y="56" width="640" height="252" rx="8" class="zone"/><text x="16" y="80" class="eb">OSI LAYER 2 · DATA LINK</text>
+<rect x="0" y="0" width="640" height="48" rx="6" class="pm"/>
+<rect x="0" y="0" width="640" height="48" rx="6" class="ext"/>
+<text x="320.0" y="18.0" class="nm" text-anchor="middle">Network layer and above</text>
+<text x="320.0" y="39.9" class="sl" text-anchor="middle">packets, files, commands</text>
+<rect x="16" y="96" width="608" height="56" rx="6" class="pm"/>
+<rect x="16" y="96" width="608" height="56" rx="6" class="box"/>
+<text x="320.0" y="118.0" class="nm" text-anchor="middle">Data Link Protocol sublayer</text>
+<text x="320.0" y="139.9" class="sl" text-anchor="middle">TM · TC · AOS · USLP build Transfer Frames</text>
+<rect x="16" y="164" width="608" height="56" rx="6" class="pm"/>
+<rect x="16" y="164" width="608" height="56" rx="6" class="focal"/>
+<text x="320.0" y="186.0" class="nm" text-anchor="middle">Space Data Link Security protocol</text>
+<text x="320.0" y="207.9" class="sl" text-anchor="middle">secures the frame&#x27;s data field, inside layer 2</text>
+<rect x="16" y="232" width="608" height="56" rx="6" class="pm"/>
+<rect x="16" y="232" width="608" height="56" rx="6" class="box"/>
+<text x="320.0" y="254.0" class="nm" text-anchor="middle">Synchronization &amp; Channel Coding sublayer</text>
+<text x="320.0" y="275.9" class="sl" text-anchor="middle">ASM / CLTU, coding: unaffected by SDLS</text>
+<rect x="0" y="316" width="640" height="48" rx="6" class="pm"/>
+<rect x="0" y="316" width="640" height="48" rx="6" class="ext"/>
+<text x="320.0" y="334.0" class="nm" text-anchor="middle">Physical layer</text>
+<text x="320.0" y="355.9" class="sl" text-anchor="middle">RF link</text>
+</svg></div><figcaption>Figure 2-1 redrawn. SDLS is a slice of layer 2; channel coding underneath is unaffected.</figcaption></figure>
+<h3>One frame, two shapes</h3>
+<p>Toggle SDLS on and off to see what it adds to a frame.</p>
+<div class="sim" id="sim-frame1">
+ <div class="ctl"><label class="sw"><input type="checkbox" id="f1-on" checked> <span>SDLS on</span></label></div>
+ <div class="framebar" id="f1-bar" aria-live="polite"></div>
+ <p class="simnote" id="f1-note"></p>
+</div>
+<div class="lenses">
+<aside class="lens func"><p class="eyebrow">Functional lens</p><ul><li>Works on octet-aligned user data inside Transfer Frames.</li><li>Keeps the frame header formats, so legacy frame processing and SLE services keep working.</li><li>Scales to any number of virtual channels; header and trailer sizes are fixed per channel for the mission.</li><li>Not for Proximity-1.</li></ul></aside>
+<aside class="lens sec"><p class="eyebrow">Security lens</p><ul><li>Algorithm-agnostic: the protocol carries the parameters; CCSDS 352.0 lists recommended algorithms.</li><li>Protects the frame data and selected header fields, not the RF channel itself.</li><li>Key management is outside this standard.</li></ul></aside>
+</div>
+<div class="quiz" data-quiz="m1"><p class="eyebrow">Quick check</p><div class="qs"></div></div>
+</section>
+<section class="mod" id="m2" aria-labelledby="m2-h">
+<div class="mod-head"><p class="eyebrow">Module 2 of 11</p><div class="tags"><span class="tag f">Functional</span><span class="tag s">Security</span></div></div>
+<h2 id="m2-h">Security Associations</h2>
+
+<p class="lead">A Security Association (SA) is the agreement both ends share about how to protect one direction of traffic: which service, which algorithms and keys, which field lengths, and the running counters.</p>
+<figure class="fig"><div class="scroll"><svg class="fig-svg" viewBox="0 0 760 280" role="img" aria-labelledby="sa-title sa-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="sa-title">How a frame finds its Security Association</title>
+<desc id="sa-desc">The Security Parameter Index in a received frame&#x27;s Security Header indexes the SA database, which returns the Security Association holding the service type, bindings, algorithms, keys and counters.</desc>
+<path d="M200,128 H280" class="ar" marker-end="url(#mk)"/>
+<rect x="220.0" y="106" width="40" height="16" rx="2" class="mk"/><text x="240" y="118" class="al" text-anchor="middle">SPI</text>
+<path d="M480,128 H560" class="ar acc" marker-end="url(#mk-acc)"/>
+<rect x="0" y="80" width="200" height="96" rx="6" class="pm"/>
+<rect x="0" y="80" width="200" height="96" rx="6" class="box"/>
+<text x="100.0" y="107.9" class="kk" text-anchor="middle">RECEIVED FRAME</text>
+<text x="100.0" y="133.0" class="nm" text-anchor="middle">Security Header</text>
+<text x="100.0" y="154.9" class="sl" text-anchor="middle">SPI = 3</text>
+<rect x="280" y="40" width="200" height="176" rx="6" class="pm"/>
+<rect x="280" y="40" width="200" height="176" rx="6" class="store"/>
+<text x="380.0" y="98.9" class="kk" text-anchor="middle">SA DATABASE</text>
+<text x="380.0" y="124.0" class="nm" text-anchor="middle">One record per SPI</text>
+<text x="380.0" y="145.9" class="sl" text-anchor="middle">identical copy at</text>
+<text x="380.0" y="163.9" class="sl" text-anchor="middle">sender and receiver</text>
+<rect x="560" y="24" width="200" height="208" rx="6" class="pm"/>
+<rect x="560" y="24" width="200" height="208" rx="6" class="focal"/>
+<text x="660.0" y="71.9" class="kk" text-anchor="middle">SECURITY ASSOCIATION</text>
+<text x="660.0" y="97.0" class="nm" text-anchor="middle">SA 3</text>
+<text x="660.0" y="118.9" class="sl" text-anchor="middle">service: auth. encryption</text>
+<text x="660.0" y="136.9" class="sl" text-anchor="middle">bound to GVCID / GMAP</text>
+<text x="660.0" y="154.9" class="sl" text-anchor="middle">algorithms + key refs</text>
+<text x="660.0" y="172.9" class="sl" text-anchor="middle">IV · SN · PL · MAC lengths</text>
+<text x="660.0" y="190.9" class="sl" text-anchor="middle">mask · SN · window · IV</text>
+<text x="0" y="232" class="co" text-anchor="start">Simplex: one direction per SA.</text>
+<text x="0" y="252" class="co" text-anchor="start">Uplink and downlink each need their own.</text>
+</svg></div><figcaption>The SPI is the only SA information sent with each frame. Everything else lives in the SA database at both ends.</figcaption></figure>
+<h3>Explore an SA database</h3>
+<p>A sample database for a mission with a TC uplink and an AOS downlink. Pick an SA to see its parameters.</p>
+<div class="sim" id="sim-sadb">
+ <div class="sa-list" role="tablist" aria-label="Security Associations"></div>
+ <div class="sa-detail" role="tabpanel" aria-live="polite"></div>
+</div>
+<h3>Lifecycle</h3>
+<ol class="flow4">
+ <li><b>Create</b> the SA with its service type, algorithms and lengths.</li>
+ <li><b>Key</b> it: associate the cryptographic key or keys.</li>
+ <li><b>Bind</b> it to one or more GVCIDs or GMAP_IDs.</li>
+ <li><b>Activate</b> it. Only one SA may be active per GVCID or GMAP at the sender.</li>
+</ol>
+<div class="lenses">
+<aside class="lens func"><p class="eyebrow">Functional lens</p><ul><li>All frames with the same SPI on a physical channel share one SA; those frames form a Secure Channel.</li><li>SAs can be preloaded before launch or created in flight, alongside active ones.</li><li>Service type is exactly one of: authentication, encryption, authenticated encryption.</li></ul></aside>
+<aside class="lens sec"><p class="eyebrow">Security lens</p><ul><li>Algorithms, modes and lengths are frozen for the SA's life: no in-band downgrade.</li><li>Sender and receiver databases must stay in sync, or every frame fails.</li><li>Keys are stored by value or by index into a key store.</li></ul></aside>
+</div>
+<div class="quiz" data-quiz="m2"><p class="eyebrow">Quick check</p><div class="qs"></div></div>
+</section>
+<section class="mod" id="m3" aria-labelledby="m3-h">
+<div class="mod-head"><p class="eyebrow">Module 3 of 11</p><div class="tags"><span class="tag f">Functional</span></div></div>
+<h2 id="m3-h">Security Header and Trailer</h2>
+
+<p class="lead">The Security Header and Trailer wrap the Frame Data Field. Their layout is set by the SA, so the receiver learns all optional lengths from the SPI alone.</p>
+<h3>Frame builder</h3>
+<p>Choose a link protocol and an SA configuration. Lengths are in octets; the builder enforces the standard's limits.</p>
+<div class="sim" id="sim-builder">
+ <div class="ctl grid">
+  <label>Protocol <select id="b-proto"><option>TM</option><option>TC</option><option>AOS</option><option>USLP</option></select></label>
+  <label>Service <select id="b-svc"><option value="ae">Authenticated encryption</option><option value="auth">Authentication</option><option value="enc">Encryption</option></select></label>
+  <label>IV <input type="number" id="b-iv" min="0" max="32" value="12"></label>
+  <label>SN <input type="number" id="b-sn" min="0" max="8" value="0"></label>
+  <label>Pad length <input type="number" id="b-pl" min="0" max="2" value="0"></label>
+  <label>MAC <input type="number" id="b-mac" min="0" max="64" value="16"></label>
+  <button type="button" class="btn" id="b-base">Load baseline</button>
+ </div>
+ <div class="framebar" id="b-bar"></div>
+ <div class="legend-row"><span class="lk enc">encrypted</span><span class="lk mac">covered by MAC</span><span class="lk macp">partly covered (VCID and other masked-in bits)</span><span class="lk never">never in MAC</span></div>
+ <ul class="checks" id="b-msgs" aria-live="polite"></ul>
+</div>
+<div class="tbl"><table>
+<thead><tr><th>Field</th><th>Length</th><th>Present when</th></tr></thead>
+<tbody>
+<tr><td>Security Parameter Index</td><td>16 bits</td><td>Always. Values 1–65534.</td></tr>
+<tr><td>Initialization Vector</td><td>0 or 1–32 octets</td><td>The algorithm needs an IV (or part of one is sent)</td></tr>
+<tr><td>Sequence Number</td><td>0 or 2–8 octets</td><td>Authentication, unless the IV doubles as the SN</td></tr>
+<tr><td>Pad Length</td><td>0 or 1–2 octets</td><td>The mode needs fill padding</td></tr>
+<tr><td>MAC (trailer)</td><td>0 or 8–64 octets</td><td>Authentication or authenticated encryption</td></tr>
+</tbody></table></div>
+<div class="quiz" data-quiz="m3"><p class="eyebrow">Quick check</p><div class="qs"></div></div>
+</section>
+<section class="mod" id="m4" aria-labelledby="m4-h">
+<div class="mod-head"><p class="eyebrow">Module 4 of 11</p><div class="tags"><span class="tag f">Functional</span><span class="tag s">Security</span></div></div>
+<h2 id="m4-h">Sending: ApplySecurity</h2>
+
+<p class="lead">At the sending end, the link protocol builds a partial frame and calls <code>ApplySecurity</code>. SDLS selects the SA from the GVCID (and GMAP_ID), protects the frame and hands back the part from Security Header to Security Trailer.</p>
+<figure class="fig"><div class="scroll"><svg class="fig-svg" viewBox="0 0 1000 196" role="img" aria-labelledby="apply-title apply-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="apply-title">ApplySecurity pipeline at the sending end</title>
+<desc id="apply-desc">Pipeline from the partial frame through encryption, Security Header completion, bit masking and MAC computation to the ApplySecurity Return.</desc>
+<g id="ap-a0" class="hl"><path d="M144,88 H168" class="ar" marker-end="url(#mk)"/></g>
+<g id="ap-a1" class="hl"><path d="M312,88 H336" class="ar" marker-end="url(#mk)"/></g>
+<g id="ap-a2" class="hl"><path d="M480,88 H504" class="ar" marker-end="url(#mk)"/></g>
+<g id="ap-a3" class="hl"><path d="M648,88 H672" class="ar" marker-end="url(#mk)"/></g>
+<g id="ap-a4" class="hl"><path d="M816,88 H840" class="ar" marker-end="url(#mk)"/></g>
+<g id="ap-n0" class="hl"><rect x="0" y="40" width="144" height="96" rx="6" class="pm"/>
+<rect x="0" y="40" width="144" height="96" rx="6" class="ext"/>
+<text x="72.0" y="58.9" class="kk" text-anchor="middle">INPUT · PAYLOAD</text>
+<text x="72.0" y="84.0" class="nm" text-anchor="middle">Partial frame</text>
+<text x="72.0" y="105.9" class="sl" text-anchor="middle">Primary Header →</text>
+<text x="72.0" y="123.9" class="sl" text-anchor="middle">Frame Data Field</text></g>
+<g id="ap-n1" class="hl"><rect x="168" y="40" width="144" height="96" rx="6" class="pm"/>
+<rect x="168" y="40" width="144" height="96" rx="6" class="box"/>
+<text x="240.0" y="58.9" class="kk" text-anchor="middle">ENCRYPTION</text>
+<text x="240.0" y="84.0" class="nm" text-anchor="middle">Encrypt data</text>
+<text x="240.0" y="105.9" class="sl" text-anchor="middle">data field only</text>
+<text x="240.0" y="123.9" class="sl" text-anchor="middle">+ pad length</text></g>
+<g id="ap-n2" class="hl"><rect x="336" y="40" width="144" height="96" rx="6" class="pm"/>
+<rect x="336" y="40" width="144" height="96" rx="6" class="box"/>
+<text x="408.0" y="58.9" class="kk" text-anchor="middle">HEADER</text>
+<text x="408.0" y="84.0" class="nm" text-anchor="middle">Security Header</text>
+<text x="408.0" y="105.9" class="sl" text-anchor="middle">SN + 1, IV, SPI</text>
+<text x="408.0" y="123.9" class="sl" text-anchor="middle">SN may be the IV</text></g>
+<g id="ap-n3" class="hl"><rect x="504" y="40" width="144" height="96" rx="6" class="pm"/>
+<rect x="504" y="40" width="144" height="96" rx="6" class="box"/>
+<text x="576.0" y="58.9" class="kk" text-anchor="middle">MASK</text>
+<text x="576.0" y="84.0" class="nm" text-anchor="middle">Apply bit mask</text>
+<text x="576.0" y="105.9" class="sl" text-anchor="middle">frame AND mask</text>
+<text x="576.0" y="123.9" class="sl" text-anchor="middle">→ Auth. Payload</text></g>
+<g id="ap-n4" class="hl"><rect x="672" y="40" width="144" height="96" rx="6" class="pm"/>
+<rect x="672" y="40" width="144" height="96" rx="6" class="focal"/>
+<text x="744.0" y="58.9" class="kk" text-anchor="middle">AUTHENTICATION</text>
+<text x="744.0" y="84.0" class="nm" text-anchor="middle">Compute MAC</text>
+<text x="744.0" y="105.9" class="sl" text-anchor="middle">truncate if needed</text>
+<text x="744.0" y="123.9" class="sl" text-anchor="middle">→ Security Trailer</text></g>
+<g id="ap-n5" class="hl"><rect x="840" y="40" width="144" height="96" rx="6" class="pm"/>
+<rect x="840" y="40" width="144" height="96" rx="6" class="ext"/>
+<text x="912.0" y="58.9" class="kk" text-anchor="middle">OUTPUT · RETURN</text>
+<text x="912.0" y="84.0" class="nm" text-anchor="middle">Return</text>
+<text x="912.0" y="105.9" class="sl" text-anchor="middle">Security Header →</text>
+<text x="912.0" y="123.9" class="sl" text-anchor="middle">Security Trailer</text></g>
+<text x="0" y="176" class="co" text-anchor="start">Authenticated encryption = encrypt first, then MAC over the result.</text>
+</svg></div><figcaption>The full pipeline for authenticated encryption. Pick a service below to see which steps run.</figcaption></figure>
+<div class="sim" id="sim-apply">
+ <div class="ctl seg" role="group" aria-label="Service type">
+  <button type="button" data-svc="auth">Authentication</button><button type="button" data-svc="enc">Encryption</button><button type="button" data-svc="ae" class="on">Authenticated encryption</button>
+ </div>
+ <div class="ctl"><button type="button" class="btn" id="ap-prev">← Step</button><button type="button" class="btn" id="ap-next">Step →</button><span class="stepno" id="ap-no"></span></div>
+ <p class="steptext" id="ap-text" aria-live="polite"></p>
+</div>
+<h3>AEAD: what is plaintext, what is AAD</h3>
+<div class="aead">
+ <div class="seg-a"><span>Primary Header</span><span>(Segment Hdr / FSH)</span><span>Security Header</span></div>
+ <div class="seg-p"><span>Frame Data Field</span></div>
+ <div class="seg-t"><span>MAC</span></div>
+ <p class="aead-l a">AAD: from the first octet of the Authentication Payload to just before the data field (after masking)</p>
+ <p class="aead-l p">Plaintext: the Frame Data Field</p>
+</div>
+<div class="lenses">
+<aside class="lens func"><p class="eyebrow">Functional lens</p><ul><li>Input: from the first octet of the Primary Header to the last octet of the data field, with an empty Security Header.</li><li>MAC may be truncated (least-significant bits dropped) to the SA's MAC length.</li><li>Pad Length records fill bytes when the mode needs them.</li></ul></aside>
+<aside class="lens sec"><p class="eyebrow">Security lens</p><ul><li>Encrypt-then-MAC: the receiver can reject a forged frame before decrypting anything.</li><li>The sequence number goes into the header before the MAC, so it is authenticated.</li><li>Only one active SA per channel: no ambiguity about which key protects a frame.</li></ul></aside>
+</div>
+<div class="quiz" data-quiz="m4"><p class="eyebrow">Quick check</p><div class="qs"></div></div>
+</section>
+<section class="mod" id="m5" aria-labelledby="m5-h">
+<div class="mod-head"><p class="eyebrow">Module 5 of 11</p><div class="tags"><span class="tag f">Functional</span><span class="tag s">Security</span></div></div>
+<h2 id="m5-h">Receiving: ProcessSecurity</h2>
+
+<p class="lead">At the receiving end, <code>ProcessSecurity</code> always verifies and may decrypt. It returns a Verification Status, a status code, and the data between the Security Header and the trailer.</p>
+<figure class="fig"><div class="scroll"><svg class="fig-svg" viewBox="0 0 960 368" role="img" aria-labelledby="process-title process-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="process-title">ProcessSecurity decision flow at the receiving end</title>
+<desc id="process-desc">Flowchart: verify the SPI belongs to the virtual channel, verify the MAC, check the sequence number against the window, then store the new sequence number, decrypt and return data; any failure discards the frame with a status code.</desc>
+<g id="pr-a0" class="hl"><path d="M128,88 H176" class="ar" marker-end="url(#mk)"/></g>
+<g id="pr-a1" class="hl"><path d="M336,88 H384" class="ar" marker-end="url(#mk)"/><rect x="340.0" y="66" width="40" height="16" rx="2" class="mk"/><text x="360" y="78" class="al" text-anchor="middle">YES</text></g>
+<g id="pr-a2" class="hl"><path d="M544,88 H592" class="ar" marker-end="url(#mk)"/><rect x="548.0" y="66" width="40" height="16" rx="2" class="mk"/><text x="568" y="78" class="al" text-anchor="middle">YES</text></g>
+<g id="pr-a3" class="hl"><path d="M752,88 H800" class="ar" marker-end="url(#mk)"/><rect x="756.0" y="66" width="40" height="16" rx="2" class="mk"/><text x="776" y="78" class="al" text-anchor="middle">YES</text></g>
+<g id="pr-x1" class="hl"><path d="M256,136 V216" class="ar" marker-end="url(#mk)"/><rect x="264" y="168" width="32" height="16" rx="2" class="mk"/><text x="280.0" y="180" class="al" text-anchor="middle">NO</text></g>
+<g id="pr-x2" class="hl"><path d="M464,136 V216" class="ar" marker-end="url(#mk)"/><rect x="472" y="168" width="32" height="16" rx="2" class="mk"/><text x="488.0" y="180" class="al" text-anchor="middle">NO</text></g>
+<g id="pr-x3" class="hl"><path d="M672,136 V216" class="ar" marker-end="url(#mk)"/><rect x="680" y="168" width="32" height="16" rx="2" class="mk"/><text x="696.0" y="180" class="al" text-anchor="middle">NO</text></g>
+<g id="pr-a4" class="hl"><path d="M880,120 V176" class="ar" marker-end="url(#mk)"/></g>
+<g id="pr-a5" class="hl"><path d="M880,240 V296" class="ar" marker-end="url(#mk)"/></g>
+<g id="pr-n0" class="hl"><rect x="0" y="56" width="128" height="64" rx="6" class="pm"/>
+<rect x="0" y="56" width="128" height="64" rx="6" class="ext"/>
+<text x="64.0" y="82.0" class="nm" text-anchor="middle">Frame in</text>
+<text x="64.0" y="103.9" class="sl" text-anchor="middle">ProcessSecurity</text></g>
+<g id="pr-d1" class="hl"><polygon points="176,88 256,40 336,88 256,136" class="pm"/><polygon points="176,88 256,40 336,88 256,136" class="box"/><text x="256" y="86" class="nm" text-anchor="middle">SPI valid</text><text x="256" y="106" class="nm" text-anchor="middle">for GVCID?</text></g>
+<g id="pr-d2" class="hl"><polygon points="384,88 464,40 544,88 464,136" class="pm"/><polygon points="384,88 464,40 544,88 464,136" class="box"/><text x="464" y="86" class="nm" text-anchor="middle">MAC</text><text x="464" y="106" class="nm" text-anchor="middle">matches?</text></g>
+<g id="pr-d3" class="hl"><polygon points="592,88 672,40 752,88 672,136" class="pm"/><polygon points="592,88 672,40 752,88 672,136" class="box"/><text x="672" y="86" class="nm" text-anchor="middle">SN inside</text><text x="672" y="106" class="nm" text-anchor="middle">window?</text></g>
+<g id="pr-f1" class="hl"><rect x="176" y="216" width="160" height="64" rx="6" class="pm"/>
+<rect x="176" y="216" width="160" height="64" rx="6" class="sec"/>
+<text x="256.0" y="242.0" class="nm" text-anchor="middle">Discard + report</text>
+<text x="256.0" y="263.9" class="sl" text-anchor="middle">invalid SPI</text></g>
+<g id="pr-f2" class="hl"><rect x="384" y="216" width="160" height="64" rx="6" class="pm"/>
+<rect x="384" y="216" width="160" height="64" rx="6" class="sec"/>
+<text x="464.0" y="242.0" class="nm" text-anchor="middle">Discard + report</text>
+<text x="464.0" y="263.9" class="sl" text-anchor="middle">MAC failure</text></g>
+<g id="pr-f3" class="hl"><rect x="592" y="216" width="160" height="64" rx="6" class="pm"/>
+<rect x="592" y="216" width="160" height="64" rx="6" class="sec"/>
+<text x="672.0" y="242.0" class="nm" text-anchor="middle">Discard + report</text>
+<text x="672.0" y="263.9" class="sl" text-anchor="middle">anti-replay failure</text></g>
+<g id="pr-n4" class="hl"><rect x="800" y="56" width="160" height="64" rx="6" class="pm"/>
+<rect x="800" y="56" width="160" height="64" rx="6" class="box"/>
+<text x="880.0" y="82.0" class="nm" text-anchor="middle">Store new SN</text>
+<text x="880.0" y="103.9" class="sl" text-anchor="middle">only after a–i pass</text></g>
+<g id="pr-n5" class="hl"><rect x="800" y="176" width="160" height="64" rx="6" class="pm"/>
+<rect x="800" y="176" width="160" height="64" rx="6" class="box"/>
+<text x="880.0" y="202.0" class="nm" text-anchor="middle">Decrypt + unpad</text>
+<text x="880.0" y="223.9" class="sl" text-anchor="middle">pad error possible</text></g>
+<g id="pr-n6" class="hl"><rect x="800" y="296" width="160" height="64" rx="6" class="pm"/>
+<rect x="800" y="296" width="160" height="64" rx="6" class="focal"/>
+<text x="880.0" y="322.0" class="nm" text-anchor="middle">Return data</text>
+<text x="880.0" y="343.9" class="sl" text-anchor="middle">status: no failure</text></g>
+<text x="0" y="336" class="co" text-anchor="start">A frame that fails is never decrypted.</text>
+</svg></div><figcaption>Receiving procedure for an authentication or authenticated-encryption SA. Run a scenario to trace a frame.</figcaption></figure>
+<div class="sim" id="sim-process">
+ <div class="ctl seg wrap" role="group" aria-label="Scenarios">
+  <button type="button" data-sc="ok">Valid frame</button><button type="button" data-sc="spi">Wrong SPI for this VC</button><button type="button" data-sc="mac">Bit flipped in data</button><button type="button" data-sc="replay">Replayed frame</button><button type="button" data-sc="ahead">SN far ahead</button>
+ </div>
+ <div class="status" id="pr-status" aria-live="polite"><span class="code">Pick a scenario</span><span class="why">The diagram highlights the path the frame takes.</span></div>
+</div>
+<div class="lenses">
+<aside class="lens func"><p class="eyebrow">Functional lens</p><ul><li>Minimum status codes: no failure, invalid SPI, MAC verification failure, anti-replay failure, padding error.</li><li>Encryption-only SAs skip the MAC and sequence checks.</li><li>Pad bytes are removed using the Pad Length field.</li></ul></aside>
+<aside class="lens sec"><p class="eyebrow">Security lens</p><ul><li>Verify before decrypt; never decrypt a frame that failed.</li><li>The stored SN moves only after every check passes, so forgeries cannot advance it.</li><li>Rejected frames may be archived for forensic investigation.</li></ul></aside>
+</div>
+<div class="quiz" data-quiz="m5"><p class="eyebrow">Quick check</p><div class="qs"></div></div>
+</section>
+<section class="mod" id="m6" aria-labelledby="m6-h">
+<div class="mod-head"><p class="eyebrow">Module 6 of 11</p><div class="tags"><span class="tag s">Security</span></div></div>
+<h2 id="m6-h">The authentication mask</h2>
+
+<p class="lead">The authentication bit mask decides which header bits go into the MAC. It is ANDed with the frame: ones keep a bit, zeros replace it with zero. Some bits are fixed by the standard, the rest are a mission choice.</p>
+<div class="sim" id="sim-mask">
+ <div class="ctl"><label>Protocol <select id="mk-proto"><option>TM</option><option>TC</option><option>AOS</option><option>USLP</option></select></label><button type="button" class="btn" id="mk-reset">Reset to default</button></div>
+ <div class="maskrow" id="mk-row"></div>
+ <div class="mk-info" id="mk-info" aria-live="polite">Select a field to see its rule.</div>
+ <div class="legend-row"><span class="lk on">in MAC (mask 1)</span><span class="lk off">masked out (mask 0)</span><span class="lk never">never in payload</span><span class="lk lock">fixed by the standard</span></div>
+</div>
+<div class="lenses">
+<aside class="lens func"><p class="eyebrow">Functional lens</p><ul><li>The mask must be at least as long as Primary Header through data field; for variable-length TC and USLP frames, size it for the largest frame.</li><li>Fields completed after ApplySecurity (MC frame count, OCF, FECF) cannot be in the MAC.</li></ul></aside>
+<aside class="lens sec"><p class="eyebrow">Security lens</p><ul><li>Default masks leave Spacecraft ID, version and counters unauthenticated. Decide deliberately whether to include them.</li><li>VCID (and USLP MAP ID, TC Segment Header) are always authenticated, so a frame cannot be moved to another channel unnoticed.</li></ul></aside>
+</div>
+<div class="quiz" data-quiz="m6"><p class="eyebrow">Quick check</p><div class="qs"></div></div>
+</section>
+<section class="mod" id="m7" aria-labelledby="m7-h">
+<div class="mod-head"><p class="eyebrow">Module 7 of 11</p><div class="tags"><span class="tag s">Security</span></div></div>
+<h2 id="m7-h">Replay protection</h2>
+
+<p class="lead">A valid MAC proves a frame was made by a key holder, not that it is new. The sequence number and window catch replays: the receiver accepts a frame only if its SN is above the stored value and no more than the window above it.</p>
+<div class="sim" id="sim-replay">
+ <div class="ctl grid">
+  <label>Window <input type="number" id="rp-w" min="1" max="20" value="5"></label>
+  <button type="button" class="btn" id="rp-send">Send next frame</button>
+  <button type="button" class="btn" id="rp-lose">Lose 3 frames in RF</button>
+  <button type="button" class="btn warn" id="rp-replay">Replay a captured frame</button>
+  <button type="button" class="btn warn" id="rp-ahead">Inject SN far ahead</button>
+  <button type="button" class="btn ghost" id="rp-reset">Reset</button>
+ </div>
+ <div class="rp-state"><div><span class="mono">Sender next SN</span><b id="rp-tx">1</b></div><div><span class="mono">Receiver stored SN</span><b id="rp-rx">0</b></div><div><span class="mono">Accept range</span><b id="rp-rng">1–5</b></div></div>
+ <div class="numline" id="rp-line" aria-hidden="true"></div>
+ <ol class="log" id="rp-log" aria-live="polite"></ol>
+</div>
+<p class="note">Try this: set the window to 2 and press "Lose 3 frames" twice. Every later frame is rejected, because rejected frames never update the stored value. Size the window for the worst expected gap in RF reception.</p>
+<div class="lenses">
+<aside class="lens func"><p class="eyebrow">Functional lens</p><ul><li>The sender increments by one per frame; the receiver stores the last accepted value.</li><li>SN lives in its own field (2–8 octets) or in a counter-style IV.</li><li>Rollover to zero is mission-specific.</li></ul></aside>
+<aside class="lens sec"><p class="eyebrow">Security lens</p><ul><li>Replays (SN ≤ stored) and far-future frames (SN > stored + window) are discarded.</li><li>A window too large weakens the check; one too small locks the link after losses.</li></ul></aside>
+</div>
+<div class="quiz" data-quiz="m7"><p class="eyebrow">Quick check</p><div class="qs"></div></div>
+</section>
+<section class="mod" id="m8" aria-labelledby="m8-h">
+<div class="mod-head"><p class="eyebrow">Module 8 of 11</p><div class="tags"><span class="tag f">Functional</span><span class="tag s">Security</span></div></div>
+<h2 id="m8-h">What is covered, what is not</h2>
+
+<p class="lead">SDLS protects what passes through <code>ApplySecurity</code>: the Transfer Frame Data Field and authenticated header fields. Anything the link protocol adds afterwards, or that arrives as an already-built frame, is outside its reach.</p>
+<figure class="fig"><div class="scroll"><svg class="fig-svg" viewBox="0 0 896 312" role="img" aria-labelledby="cover-title cover-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="cover-title">Which services pass through SDLS</title>
+<desc id="cover-desc">Only services carried in the Transfer Frame Data Field pass through ApplySecurity; auxiliary fields and externally built frames are added afterwards and bypass SDLS.</desc>
+<path d="M128,80 V136" class="ar" marker-end="url(#mk)"/>
+<rect x="136" y="100" width="88" height="16" rx="2" class="mk"/><text x="180.0" y="112" class="al" text-anchor="middle">PROTECTED</text>
+<path d="M448,80 V136" class="ar dsh" marker-end="url(#mk)"/>
+<rect x="456" y="100" width="120" height="16" rx="2" class="mk"/><text x="516.0" y="112" class="al" text-anchor="middle">BYPASSES SDLS</text>
+<path d="M768,80 V136" class="ar dsh" marker-end="url(#mk)"/>
+<path d="M256,172 H320" class="ar" marker-end="url(#mk)"/>
+<path d="M608,208 V264" class="ar" marker-end="url(#mk)"/>
+<rect x="0" y="0" width="256" height="80" rx="6" class="pm"/>
+<rect x="0" y="0" width="256" height="80" rx="6" class="box"/>
+<text x="128.0" y="19.9" class="kk" text-anchor="middle">TRANSFER FRAME DATA</text>
+<text x="128.0" y="45.0" class="nm" text-anchor="middle">Data-field services</text>
+<text x="128.0" y="66.9" class="sl" text-anchor="middle">packets, VCA, MAP services</text>
+<rect x="320" y="0" width="256" height="80" rx="6" class="pm"/>
+<rect x="320" y="0" width="256" height="80" rx="6" class="ext"/>
+<text x="448.0" y="19.9" class="kk" text-anchor="middle">OUTSIDE DATA FIELD</text>
+<text x="448.0" y="45.0" class="nm" text-anchor="middle">Auxiliary-field services</text>
+<text x="448.0" y="66.9" class="sl" text-anchor="middle">OCF, Insert Zone, MC_FSH</text>
+<rect x="640" y="0" width="256" height="80" rx="6" class="pm"/>
+<rect x="640" y="0" width="256" height="80" rx="6" class="ext"/>
+<text x="768.0" y="19.9" class="kk" text-anchor="middle">ALMOST-COMPLETE FRAMES</text>
+<text x="768.0" y="45.0" class="nm" text-anchor="middle">Externally built frames</text>
+<text x="768.0" y="66.9" class="sl" text-anchor="middle">VCF and MCF services</text>
+<rect x="0" y="136" width="256" height="72" rx="6" class="pm"/>
+<rect x="0" y="136" width="256" height="72" rx="6" class="focal"/>
+<text x="128.0" y="166.0" class="nm" text-anchor="middle">ApplySecurity</text>
+<text x="128.0" y="187.9" class="sl" text-anchor="middle">encrypt and / or MAC</text>
+<rect x="320" y="136" width="576" height="72" rx="6" class="pm"/>
+<rect x="320" y="136" width="576" height="72" rx="6" class="box"/>
+<text x="608.0" y="166.0" class="nm" text-anchor="middle">Complete the frame</text>
+<text x="608.0" y="187.9" class="sl" text-anchor="middle">add OCF, master channel count, FECF; COP control frames</text>
+<rect x="320" y="264" width="576" height="48" rx="6" class="pm"/>
+<rect x="320" y="264" width="576" height="48" rx="6" class="ext"/>
+<text x="608.0" y="282.0" class="nm" text-anchor="middle">Physical channel</text>
+<text x="608.0" y="303.9" class="sl" text-anchor="middle">multiplexed Transfer Frames</text>
+</svg></div><figcaption>Why some services are unprotected: they never pass through ApplySecurity.</figcaption></figure>
+<div class="sim" id="sim-cover">
+ <div class="ctl seg" role="tablist" aria-label="Protocol"><button type="button" data-p="TM" class="on">TM</button><button type="button" data-p="TC">TC</button><button type="button" data-p="AOS">AOS</button><button type="button" data-p="USLP">USLP</button></div>
+ <div class="tbl" id="cv-tbl"></div>
+</div>
+<div class="lenses">
+<aside class="lens func"><p class="eyebrow">Functional lens</p><ul><li>Unprotected services can still run on the same master channel.</li><li>TC: one SA per VC. USLP with COPs: the same.</li></ul></aside>
+<aside class="lens sec"><p class="eyebrow">Security lens</p><ul><li>COP-1 / COP-P control and CLCW / PLCW in the OCF are spoofable.</li><li>Frames supplied by external sources (VCF, MCF) carry no SDLS protection.</li></ul></aside>
+</div>
+<div class="quiz" data-quiz="m8"><p class="eyebrow">Quick check</p><div class="qs"></div></div>
+</section>
+<section class="mod" id="m9" aria-labelledby="m9-h">
+<div class="mod-head"><p class="eyebrow">Module 9 of 11</p><div class="tags"><span class="tag s">Security</span></div></div>
+<h2 id="m9-h">Threat model</h2>
+
+<p class="lead">Annex B lists what SDLS does not do. Knowing those limits is as important as knowing the mechanisms.</p>
+<figure class="fig"><div class="scroll"><svg class="fig-svg" viewBox="0 0 916 288" role="img" aria-labelledby="threat-title threat-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="threat-title">Threat model for SDLS</title>
+<desc id="threat-desc">SDLS protects frames between the ground SDLS endpoint and the spacecraft against an attacker on the RF link; the ground network beyond the endpoint is outside its scope.</desc>
+<rect x="224" y="40" width="692" height="232" rx="8" class="zone"/><text x="240" y="64" class="eb">SDLS SCOPE · THE SPACE LINK</text>
+<path d="M160,136 H240" class="ar" marker-end="url(#mk)"/>
+<path d="M400,136 H740" class="ar acc" marker-end="url(#mk-acc)"/>
+<rect x="452.0" y="114" width="136" height="16" rx="2" class="mk"/><text x="520" y="126" class="al" text-anchor="middle">TRANSFER FRAMES</text>
+<path d="M632,200 V146" class="ar acc dsh"/>
+<rect x="0" y="96" width="160" height="80" rx="6" class="pm"/>
+<rect x="0" y="96" width="160" height="80" rx="6" class="ext"/>
+<text x="80.0" y="130.0" class="nm" text-anchor="middle">Mission control</text>
+<text x="80.0" y="151.9" class="sl" text-anchor="middle">ground network</text>
+<rect x="240" y="96" width="160" height="80" rx="6" class="pm"/>
+<rect x="240" y="96" width="160" height="80" rx="6" class="box"/>
+<text x="320.0" y="130.0" class="nm" text-anchor="middle">Ground SDLS end</text>
+<text x="320.0" y="151.9" class="sl" text-anchor="middle">SA database + keys</text>
+<rect x="740" y="96" width="160" height="80" rx="6" class="pm"/>
+<rect x="740" y="96" width="160" height="80" rx="6" class="box"/>
+<text x="820.0" y="130.0" class="nm" text-anchor="middle">Spacecraft</text>
+<text x="820.0" y="151.9" class="sl" text-anchor="middle">SA database + keys</text>
+<rect x="552" y="200" width="160" height="56" rx="6" class="pm"/>
+<rect x="552" y="200" width="160" height="56" rx="6" class="sec"/>
+<text x="632.0" y="222.0" class="nm" text-anchor="middle">Attacker on RF</text>
+<text x="632.0" y="243.9" class="sl" text-anchor="middle">listen · inject · jam</text>
+<text x="0" y="216" class="co" text-anchor="start">Ground networks need</text>
+<text x="0" y="236" class="co" text-anchor="start">security at other layers.</text>
+</svg></div><figcaption>SDLS protects frames between the two SDLS ends against an attacker on the RF link.</figcaption></figure>
+<h3>Predict, then check</h3>
+<p>For each attack, decide whether SDLS protects against it.</p>
+<div class="quiz" data-quiz="m9"><p class="eyebrow">Attack cards</p><div class="qs"></div></div>
+<div class="tbl"><table>
+<thead><tr><th>If you skip…</th><th>Consequence named in Annex B</th></tr></thead>
+<tbody>
+<tr><td>Authentication</td><td>Unauthorized commands or software uploaded; data from a source posing as the spacecraft.</td></tr>
+<tr><td>Integrity</td><td>Corrupted commands could cost the mission or lives; corrupted telemetry leads to wrong decisions.</td></tr>
+<tr><td>Confidentiality</td><td>Sensitive or private data visible to unauthorized parties.</td></tr>
+</tbody></table></div>
+</section>
+<section class="mod" id="m10" aria-labelledby="m10-h">
+<div class="mod-head"><p class="eyebrow">Module 10 of 11</p><div class="tags"><span class="tag f">Functional</span><span class="tag s">Security</span></div></div>
+<h2 id="m10-h">Baseline modes</h2>
+
+<p class="lead">Annex E gives baseline configurations for interoperability testing and operation. Downlinks and AOS/USLP use authenticated encryption; TC uses authentication only.</p>
+<div class="base">
+ <div class="bcard"><p class="eyebrow">TM · AOS · USLP</p><h3>AES-256-GCM, authenticated encryption</h3>
+  <div class="bytes"><span class="b-spi" style="flex:2">SPI 2</span><span class="b-iv" style="flex:12">IV 12 (also the SN)</span></div>
+  <div class="bytes"><span class="b-mac" style="flex:16">MAC 16</span></div>
+  <p>Header 14 octets, trailer 16. 96-bit IV sent in full. No SN field, no padding.</p></div>
+ <div class="bcard"><p class="eyebrow">TC</p><h3>AES-256-CMAC, authentication</h3>
+  <div class="bytes"><span class="b-spi" style="flex:2">SPI 2</span><span class="b-sn" style="flex:4">SN 4</span><span class="gap" style="flex:8"></span></div>
+  <div class="bytes"><span class="b-mac" style="flex:16">MAC 16</span></div>
+  <p>Header 6 octets, trailer 16. 32-bit SN. No IV, no padding, no encryption.</p></div>
+</div>
+<h3>Overhead calculator</h3>
+<div class="sim" id="sim-ovh">
+ <div class="ctl grid"><label>Baseline <select id="ov-b"><option value="gcm">TM / AOS / USLP (GCM)</option><option value="cmac">TC (CMAC)</option></select></label><label>Frame data field without SDLS, octets <input type="number" id="ov-n" min="16" max="65535" value="1024"></label></div>
+ <p class="ovh" id="ov-out" aria-live="polite"></p>
+</div>
+<p class="note">All baselines use a default mask: only the fields mandated in section 4.2.2.6.2 are authenticated.</p>
+<div class="quiz" data-quiz="m10"><p class="eyebrow">Quick check</p><div class="qs"></div></div>
+</section>
+<section class="mod" id="m11" aria-labelledby="m11-h">
+<div class="mod-head"><p class="eyebrow">Module 11 of 11</p><div class="tags"><span class="tag f">Functional</span></div></div>
+<h2 id="m11-h">Management and conformance</h2>
+
+<p class="lead">This standard defines the SA database parameters and the per-frame protocol. Managing SAs and keys over the link is defined in the SDLS Extended Procedures, CCSDS 355.1-B-1.</p>
+<div class="tbl"><table>
+<thead><tr><th>Lifetime</th><th>Managed parameters (table 6-1)</th></tr></thead>
+<tbody>
+<tr><td>Fixed for the SA</td><td>SPI (1–65534) · service type · GVCID / GMAP_ID · IV 1–32, SN 2–8, PL 1–2, MAC 8–64 octets · auth algorithm (HMAC, CMAC, GMAC, GCM, agency-specific) · mask · window (&gt; 0) · encryption algorithm (AES-CTR, GCM, agency-specific)</td></tr>
+<tr><td>Fixed while active</td><td>Authentication key · encryption key</td></tr>
+<tr><td>Dynamic</td><td>Sequence number · encryption IV</td></tr>
+</tbody></table></div>
+<h3>PICS builder</h3>
+<p>Conformance is claimed with a Protocol Implementation Conformance Statement. Tick what an implementation supports to see which SA parameters become mandatory.</p>
+<div class="sim" id="sim-pics">
+ <div class="ctl grid">
+  <fieldset><legend>Link protocols (O.1)</legend><label><input type="checkbox" data-p="TM" id="pc-tm"> TM</label><label><input type="checkbox" data-p="TC" id="pc-tc"> TC</label><label><input type="checkbox" data-p="AOS" id="pc-aos"> AOS</label><label><input type="checkbox" data-p="USLP" id="pc-uslp"> USLP</label></fieldset>
+  <fieldset><legend>Services (O.2)</legend><label><input type="checkbox" data-s="enc" id="pc-enc"> Encryption</label><label><input type="checkbox" data-s="auth" id="pc-auth"> Authentication</label><label><input type="checkbox" data-s="ae" id="pc-ae"> Authenticated encryption</label></fieldset>
+ </div>
+ <div class="pics" id="pc-out" aria-live="polite"></div>
+</div>
+<div class="quiz" data-quiz="m11"><p class="eyebrow">Quick check</p><div class="qs"></div></div>
+</section>
+<section class="mod" id="exam" aria-labelledby="exam-h">
+<div class="mod-head"><p class="eyebrow">Final exam</p><div class="tags"><span class="tag f">Functional</span><span class="tag s">Security</span></div></div>
+<h2 id="exam-h">Prove it</h2>
+<p class="lead">Twelve scenario questions that combine the modules. Aim for 10 or more correct on the first try.</p>
+<div class="quiz exam" data-quiz="exam"><div class="qs"></div><p class="score" id="exam-score" aria-live="polite"></p></div>
+<h3>Cheat sheet</h3>
+
+<div class="cheat">
+ <div><p class="eyebrow">Numbers</p><ul><li>SPI 16 bits; 0 and 65535 reserved</li><li>Security Header ≤ 64 octets</li><li>IV 1–32 · SN 2–8 · PL 1–2 · MAC 8–64 octets</li><li>GCM baseline: header 14, trailer 16</li><li>TC CMAC baseline: header 6, trailer 16</li></ul></div>
+ <div><p class="eyebrow">Rules</p><ul><li>SA = simplex, stateful, frozen algorithms</li><li>One active SA per GVCID / GMAP at the sender</li><li>TC: one SA per VC; no SAs for idle-data VCs</li><li>Encrypt-then-MAC; verify before decrypt</li><li>Accept SN only if stored &lt; SN ≤ stored + window</li></ul></div>
+ <div><p class="eyebrow">Not protected</p><ul><li>Jamming and traffic analysis</li><li>OCF, Insert Zone, FECF, MC frame count</li><li>COP control and CLCW / PLCW</li><li>VCF / MCF frames from external sources</li><li>Key management (see 355.1)</li></ul></div>
+</div>
+</section>
+<footer class="foot">Based on CCSDS 355.0-B-2, Space Data Link Security Protocol, Blue Book, July 2022. Section numbers in answers refer to that document. Progress is saved in this browser only.</footer>
+</main>
+</div>
+<script type="application/json" id="qbank">{"m1": [{"id": "m1a", "t": "f", "q": "Where does SDLS operate?", "o": ["In the network layer, on space packets", "Inside the data link layer, between the Data Link Protocol and Channel Coding sublayers", "In the physical layer, on the RF waveform", "In the application layer, per file"], "a": 1, "e": "SDLS is provided only at layer 2, as an extra service of the TM, TC, AOS and USLP Space Data Link Protocols.", "r": "2.1"}, {"id": "m1b", "t": "f", "q": "Which link protocol cannot use SDLS?", "o": ["TM", "TC", "USLP", "Proximity-1"], "a": 3, "e": "The standard states that the Security Protocol is not applicable to the Proximity-1 Space Data Link Protocol.", "r": "2.1"}, {"id": "m1c", "t": "f", "q": "What does adding a Security Header and Trailer cost a mission?", "o": ["Nothing; they sit outside the frame", "They shrink the maximum Transfer Frame Data Field", "They change the Transfer Frame Primary Header format", "They double the frame length"], "a": 1, "e": "Header and trailer live inside the frame around the data, so they reduce the space left for user data. Frame header formats stay unchanged, which keeps legacy frame processing working.", "r": "1.4, 2.2.1"}], "m2": [{"id": "m2a", "t": "f", "q": "A Security Association is\u2026", "o": ["a duplex session shared by uplink and downlink", "a simplex, stateful cryptographic session", "another name for a cryptographic key", "a virtual channel with encryption enabled"], "a": 1, "e": "An SA is one-way and keeps state (sequence number, IV) for the life of the session. Each direction needs its own SA.", "r": "2.3.1.1"}, {"id": "m2b", "t": "f", "q": "How does the receiver pick the SA for an incoming frame?", "o": ["From the SPI in the Security Header", "By trying every key until one works", "From the OCF", "From the Spacecraft ID alone"], "a": 0, "e": "The 16-bit Security Parameter Index is an index into the SA database. All frames with the same SPI share one SA.", "r": "2.3.1.2, 4.1.1.2"}, {"id": "m2c", "t": "s", "q": "Mid-mission you want to move an SA from AES-CMAC to AES-GCM. What does the standard allow?", "o": ["Change the algorithm field in the live SA", "Nothing: algorithms and modes are fixed for the life of an SA, so create and activate a new SA", "Send the new algorithm in the Security Header", "Switch automatically when the key changes"], "a": 1, "e": "Once an SA is created its algorithms, modes and field lengths are fixed. Switching between SAs is an Application Layer function.", "r": "2.3.1.3, 2.3.1.5"}, {"id": "m2d", "t": "f", "q": "Which SPI values are reserved by CCSDS?", "o": ["1 and 65534", "0 and 65535", "0 to 255", "None"], "a": 1, "e": "All zeros and all ones are reserved, so usable SPIs are 1 to 65534.", "r": "4.1.1.2.3, table 6-1"}], "m3": [{"id": "m3a", "t": "f", "q": "Which Security Header field is always present?", "o": ["Initialization Vector", "Sequence Number", "Security Parameter Index", "Pad Length"], "a": 2, "e": "The SPI (16 bits) is the only mandatory field. IV, Sequence Number and Pad Length may be zero octets long.", "r": "4.1.1.1.3"}, {"id": "m3b", "t": "f", "q": "What is the maximum size of a Security Header?", "o": ["16 octets", "32 octets", "64 octets", "Unlimited"], "a": 2, "e": "A Security Header is at most 64 octets.", "r": "4.1.1.1.4"}, {"id": "m3c", "t": "f", "q": "When must a Security Trailer be present?", "o": ["Always", "Whenever authentication or authenticated encryption is applied", "Only with encryption", "Only on TC"], "a": 1, "e": "The trailer carries the MAC, so it exists whenever a MAC is computed. An encryption-only SA has no trailer.", "r": "4.1.2.2"}], "m4": [{"id": "m4a", "t": "s", "q": "With authenticated encryption, what is the order of operations?", "o": ["MAC, then encrypt", "Encrypt, then MAC over the result", "Encrypt and MAC independently over the plaintext", "Only encrypt"], "a": 1, "e": "SDLS specifies encrypt-then-MAC: encrypt the data field, apply the sequence number, then compute the MAC over the resulting frame.", "r": "2.3.4, 4.2.3.2.2.3"}, {"id": "m4b", "t": "f", "q": "For an AEAD algorithm such as GCM, what is the Additional Authenticated Data?", "o": ["The Frame Data Field", "Everything from the first octet of the Authentication Payload up to the octet before the Frame Data Field", "Only the Security Trailer", "The OCF and FECF"], "a": 1, "e": "Plaintext is the Frame Data Field. AAD is the (masked) headers in front of it, including the Security Header.", "r": "4.2.3.2.2.3 a"}, {"id": "m4c", "t": "f", "q": "What does the sender do with the managed sequence number for each frame?", "o": ["Nothing; the receiver tracks it", "Increments it by one, then places it in the header (or IV)", "Places it, then increments by the window size", "Resets it every pass"], "a": 1, "e": "Step a) increment by one, step b) place it in the Sequence Number field unless the SA uses the IV for it.", "r": "4.2.3.4"}], "m5": [{"id": "m5a", "t": "s", "q": "A frame fails MAC verification on an authenticated-encryption SA. What happens?", "o": ["It is decrypted and flagged", "It is discarded, an exception is reported, and it is never decrypted", "The receiver resets its sequence number", "It is passed up with a warning"], "a": 1, "e": "On any verification failure ProcessSecurity exits with a status code. Decryption is not performed after a verification failure. Discarded frames may be archived for forensics.", "r": "3.3.3.3 note 2, 4.2.4.4"}, {"id": "m5b", "t": "s", "q": "Which of these is NOT one of the minimum Verification Status Codes?", "o": ["Invalid SPI", "MAC verification failure", "Anti-replay sequence number failure", "Key expired"], "a": 3, "e": "The minimum set is: no failure, invalid SPI, MAC verification failure, anti-replay sequence number failure, padding error.", "r": "3.3.3.2"}, {"id": "m5c", "t": "s", "q": "When does the receiver replace its stored sequence number?", "o": ["As soon as the frame arrives", "After the MAC check only", "Only after the frame passes all checks a) to i)", "Never; only the sender stores it"], "a": 2, "e": "Updating before verification would let a forged frame push the counter forward and lock out real traffic.", "r": "4.2.4.4 j"}], "m6": [{"id": "m6a", "t": "s", "q": "Why is the TM Master Channel Frame Count masked out of the MAC?", "o": ["It is secret", "It is filled in later, when virtual channels are multiplexed onto the master channel, after ApplySecurity has run", "It is encrypted instead", "It is always zero"], "a": 1, "e": "ApplySecurity works on a partial frame. Fields completed afterwards (MC frame count, OCF, FECF) cannot be covered by a MAC computed earlier.", "r": "4.2.2.6.2 d, figure 2-3"}, {"id": "m6b", "t": "s", "q": "Which header field must always be inside the MAC?", "o": ["Spacecraft ID", "Virtual Channel ID", "Version number", "Frame length"], "a": 1, "e": "VCID mask bits are always all ones (and the MAP ID for USLP, Segment Header for TC). Spacecraft ID is excluded by default but a mission may add it.", "r": "4.2.2.6.2 b, c, f"}, {"id": "m6c", "t": "s", "q": "Which fields are never covered by the MAC?", "o": ["Security Header and Frame Data", "Insert Zone, OCF, ECF, the MAC itself, and the ASM / CLTU start sequence", "Virtual Channel ID", "Segment Header"], "a": 1, "e": "These are either added after security processing or belong to channel coding.", "r": "2.3.2.2"}], "m7": [{"id": "m7a", "t": "s", "q": "Stored SN = 100, window = 5. A valid frame arrives with SN 104. Result?", "o": ["Accepted; stored SN becomes 104", "Rejected as replay", "Rejected as outside window", "Accepted; stored SN stays 100"], "a": 0, "e": "104 is above 100 and within 100 + 5, so it passes and becomes the new stored value.", "r": "4.2.4.4 g\u2013j"}, {"id": "m7b", "t": "s", "q": "Stored SN = 100, window = 5. A frame arrives with SN 100. Result?", "o": ["Accepted", "Rejected: lower than or equal to the stored value", "Rejected: MAC failure", "Accepted if the MAC is valid"], "a": 1, "e": "Any SN lower than or equal to the stored value is treated as a replay and discarded, even with a valid MAC.", "r": "4.2.4.4 h"}, {"id": "m7c", "t": "s", "q": "Stored SN = 100, window = 5. A frame arrives with SN 107. Result?", "o": ["Accepted; stored SN becomes 107", "Rejected and stored SN stays 100", "Accepted; window grows", "Rejected and stored SN becomes 107"], "a": 1, "e": "107 exceeds 100 + 5. The frame is discarded and the stored value is neither replaced nor incremented.", "r": "2.3.2.3.2, 4.2.4.4 i"}, {"id": "m7d", "t": "f", "q": "In the AES-GCM baseline, where is the anti-replay sequence number carried?", "o": ["In a 4-octet Sequence Number field", "In the 96-bit IV, which is a simple incrementing counter", "In the OCF", "It is not carried"], "a": 1, "e": "With counter-style IVs the IV doubles as the sequence number, so the Sequence Number field is zero octets.", "r": "2.3.2.3.4 b, E1.2"}], "m8": [{"id": "m8a", "t": "s", "q": "TM with an authenticated-encryption SA: what protection does the VC Frame Secondary Header get?", "o": ["Encrypted and authenticated", "Authentication only", "None", "Encrypted only"], "a": 1, "e": "Encryption covers the Frame Data Field only. The VC_FSH can be included in the MAC but is never encrypted.", "r": "5.1 b, table 5-1"}, {"id": "m8b", "t": "s", "q": "Are TC COP-1 control commands protected by SDLS?", "o": ["Yes, by the MAC", "Yes, by encryption", "No; an attacker could send false COP directives or forge the CLCW in the OCF", "Only on USLP"], "a": 2, "e": "COP Management control frames and the CLCW/PLCW status in the OCF are outside SDLS protection.", "r": "5.2 b, B1.3"}, {"id": "m8c", "t": "f", "q": "On TC, how many virtual channels can one SA serve?", "o": ["Any number", "Exactly one", "Up to 8", "One per MAP"], "a": 1, "e": "Each TC SA is associated with one VC only. USLP has the same rule when COPs are used.", "r": "5.2 c, 5.4 c"}], "m9": [{"id": "m9a", "t": "s", "q": "Attack: an outsider injects a forged telecommand frame on a channel with an authentication SA.", "o": ["SDLS protects against this", "SDLS does not protect against this"], "a": 0, "e": "Without the key the attacker cannot produce a valid MAC, so the frame fails verification and is discarded.", "r": "2.3.2, 4.2.4.4"}, {"id": "m9b", "t": "s", "q": "Attack: replaying yesterday's valid, correctly signed command frame.", "o": ["SDLS protects against this", "SDLS does not protect against this"], "a": 0, "e": "Its sequence number is at or below the stored value, so the anti-replay check rejects it.", "r": "2.3.2.3"}, {"id": "m9c", "t": "s", "q": "Attack: jamming the uplink frequency.", "o": ["SDLS protects against this", "SDLS does not protect against this"], "a": 1, "e": "SDLS gives no protection against denial of service on the channel, such as RF jamming.", "r": "B1.3"}, {"id": "m9d", "t": "s", "q": "Attack: working out which spacecraft and virtual channels are busy from the headers, with encryption on.", "o": ["SDLS protects against this", "SDLS does not protect against this"], "a": 1, "e": "Spacecraft ID, VCID, MAP ID, OCF and COP directives stay in clear text, so traffic analysis is possible.", "r": "B1.3"}, {"id": "m9e", "t": "s", "q": "Attack: flipping bits in the data of an encryption-only SA.", "o": ["SDLS protects against this", "SDLS does not protect against this"], "a": 1, "e": "Encryption without authentication gives no integrity: substitution attacks go undetected, and predictable plaintext may even expose the key.", "r": "2.3.3 note, B1.3"}, {"id": "m9f", "t": "s", "q": "Attack: forging a CLCW in the OCF to confuse the ground's COP-1 retransmission logic.", "o": ["SDLS protects against this", "SDLS does not protect against this"], "a": 1, "e": "The OCF is outside the MAC and COP status is explicitly unprotected.", "r": "B1.3"}, {"id": "m9g", "t": "s", "q": "A 'clear mode' SA (no-op algorithm) is left available in flight. What is the concern?", "o": ["None; it is only for testing", "Whoever can activate it turns off protection, so its activation conditions need careful analysis", "It doubles the header size", "It disables the sequence number"], "a": 1, "e": "Clear mode is meant for development testing and is not recommended in normal operation.", "r": "4.2.2.4 note, B1.3"}], "m10": [{"id": "m10a", "t": "f", "q": "What is the TC baseline?", "o": ["AES-256-GCM, 96-bit IV", "AES-256-CMAC authentication, 32-bit sequence number, 128-bit MAC", "HMAC-SHA-256, no SN", "Encryption only"], "a": 1, "e": "TC baseline is authentication with AES-CMAC, a 256-bit key, 32-bit SN in the header and a 128-bit MAC. Header 6 octets, trailer 16.", "r": "E2"}, {"id": "m10b", "t": "f", "q": "How big is the Security Header in the TM, AOS and USLP baselines?", "o": ["6 octets", "14 octets", "16 octets", "64 octets"], "a": 1, "e": "2-octet SPI plus a 12-octet (96-bit) IV; SN and Pad Length are zero octets.", "r": "E1.2, E3.2, E4.2"}, {"id": "m10c", "t": "s", "q": "Why does the GCM baseline need no Pad Length field?", "o": ["GCM does not need padding", "Padding is in the trailer", "Padding is forbidden", "The OCF carries it"], "a": 0, "e": "GCM is a counter-based mode and works on any data length.", "r": "E1.2 note 2"}], "m11": [{"id": "m11a", "t": "f", "q": "Does CCSDS 355.0 define how keys are distributed and SAs managed over the link?", "o": ["Yes, in section 4", "No; it defines the SA database parameters. Key and SA management procedures are in the SDLS Extended Procedures (355.1)", "Yes, in Annex E", "No, and no CCSDS standard covers it"], "a": 1, "e": "Key management, SA management and monitoring & control services are in CCSDS 355.1-B-1.", "r": "1.2, 3.4.3"}, {"id": "m11b", "t": "f", "q": "Which SA parameters change frame by frame while the SA is active?", "o": ["Keys", "Sequence number and IV", "MAC length", "SPI"], "a": 1, "e": "Table 6-1 separates parameters fixed for the SA, fixed while active (keys), and dynamic (SN and IV).", "r": "table 6-1"}, {"id": "m11c", "t": "f", "q": "Minimum for a conforming implementation?", "o": ["All four link protocols and all three services", "At least one link protocol, at least one security service, all mandatory items, documented in a PICS", "Only the baseline modes", "Any subset, no paperwork"], "a": 1, "e": "PICS conditions O.1 and O.2 require at least one protocol and one service.", "r": "7, A4, A5"}], "exam": [{"id": "x1", "t": "s", "q": "A TC frame arrives with a valid SPI, but that SA belongs to a different VC. What happens?", "o": ["Processed normally", "Discarded with an invalid-SPI style SA verification failure", "Accepted if the MAC verifies", "Routed to the other VC"], "a": 1, "e": "The receiver first checks that the SA named by the SPI is associated with the frame's GVCID / GMAP_ID.", "r": "4.2.4.3"}, {"id": "x2", "t": "s", "q": "Default mask on TM. An attacker changes the Spacecraft ID bits. Does the MAC catch it?", "o": ["Yes, always", "No; SCID is masked out by default unless the mission adds it", "Only with GCM", "Only on AOS"], "a": 1, "e": "Only mandated fields are in the default mask. Missions that care can override and include SCID.", "r": "4.2.2.6.2 j, note 1"}, {"id": "x3", "t": "s", "q": "Window = 50. During a pass, 100 consecutive downlink frames are lost. What happens next?", "o": ["The next frame is accepted", "Every following frame is rejected until the sequence number is resynchronized", "The window doubles automatically", "Only one frame is rejected"], "a": 1, "e": "Each new SN is more than 50 above the stored value, and rejected frames never update the stored value, so the gap never closes. Size the window for expected losses.", "r": "2.3.2.3.3, 4.2.4.4 i\u2013j"}, {"id": "x4", "t": "f", "q": "What does the ApplySecurity Return contain?", "o": ["The whole frame", "From the first octet of the Security Header to the last octet of the Security Trailer (or data field)", "Only the MAC", "Only the encrypted data"], "a": 1, "e": "The caller then completes the frame around it.", "r": "3.2.3"}, {"id": "x5", "t": "f", "q": "What does the ProcessSecurity Return contain?", "o": ["The full frame", "From the first octet after the Security Header to the last octet of the Frame Data Field, decrypted if applicable", "Only the Security Header", "The MAC"], "a": 1, "e": "Header and trailer are stripped and the data comes back in clear if the SA encrypts.", "r": "3.3.3.3"}, {"id": "x6", "t": "f", "q": "Who decides when to switch from one active SA to another?", "o": ["The Security Header", "An Application Layer function", "The channel coding sublayer", "The SPI rolls over automatically"], "a": 1, "e": "Switching active SAs is an Application Layer function; over-the-air negotiation is not defined.", "r": "2.3.1.5"}, {"id": "x7", "t": "s", "q": "What does the anti-replay sequence number add that a MAC alone does not?", "o": ["Confidentiality", "Rejection of old but correctly authenticated frames", "Protection against jamming", "Key distribution"], "a": 1, "e": "A replayed frame carries a valid MAC; only the sequence check reveals it as stale.", "r": "2.3.2.3"}, {"id": "x8", "t": "f", "q": "Allowed transmitted MAC length?", "o": ["4\u201316 octets", "8\u201364 octets", "16 octets only", "1\u201332 octets"], "a": 1, "e": "Table 6-1: MAC 8\u201364 octets, IV 1\u201332, SN 2\u20138, Pad Length 1\u20132.", "r": "table 6-1"}, {"id": "x9", "t": "s", "q": "An SA is encryption-only. Which status code can still occur?", "o": ["MAC verification failure", "Anti-replay failure", "Invalid SPI", "None; encryption-only SAs cannot fail"], "a": 2, "e": "Without authentication there is no MAC and no sequence check, but SA verification still runs.", "r": "4.2.4.2\u20134.2.4.3"}, {"id": "x10", "t": "s", "q": "The link between mission control and the ground station is unprotected. Does SDLS help?", "o": ["Yes, it is end to end", "No; SDLS covers the space link. Other layers must protect ground segments.", "Only with GCM", "Only for TC"], "a": 1, "e": "Annex B notes that security may be needed at multiple layers to cover unprotected parts of the end-to-end path.", "r": "B1.2"}, {"id": "x11", "t": "f", "q": "SAs may be created for which virtual channels?", "o": ["Any VC, including Only Idle Data VCs", "Any VC except those carrying Only Idle Data frames", "Only VC 0", "Only TC VCs"], "a": 1, "e": "SAs are not created for OID VCs.", "r": "4.2.2.2.3"}, {"id": "x12", "t": "s", "q": "How is sequence number rollover to zero handled?", "o": ["Defined by the standard as a reset", "It is mission-specific and must be designed deliberately", "It cannot happen", "The SPI increments"], "a": 1, "e": "Interpretations and problems of rollover are discussed in the SDLS Green Book (350.5-G-1).", "r": "2.3.2.3.2 note"}]}</script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  function h(tag, attrs, html) {
+    var e = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) { if (k === 'cls') e.className = attrs[k]; else e.setAttribute(k, attrs[k]); });
+    if (html != null) e.innerHTML = html;
+    return e;
+  }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  // ---------------------------------------------------------------- progress store
+  var KEY = 'sdls-study-v1';
+  var state = { ans: {} };
+  try { var raw = localStorage.getItem(KEY); if (raw) state = JSON.parse(raw) || state; if (!state.ans) state.ans = {}; } catch (e) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+  var BANK = JSON.parse($('#qbank').textContent);
+  var ALL = [];
+  Object.keys(BANK).forEach(function (m) { BANK[m].forEach(function (q) { q.mod = m; ALL.push(q); }); });
+
+  function updateProgress() {
+    ['s', 'f'].forEach(function (t) {
+      var qs = ALL.filter(function (q) { return q.t === t; });
+      var good = qs.filter(function (q) { return state.ans[q.id] && state.ans[q.id].first; }).length;
+      var pct = Math.round(good / qs.length * 100);
+      $('#ms-' + t).textContent = pct + '%';
+      $('#mb-' + t).style.width = pct + '%';
+    });
+    $$('.toc a').forEach(function (a) {
+      var qs = BANK[a.dataset.mod] || [];
+      var ok = qs.filter(function (q) { return state.ans[q.id] && state.ans[q.id].ok; }).length;
+      var any = qs.filter(function (q) { return state.ans[q.id]; }).length;
+      a.classList.toggle('done', qs.length > 0 && ok === qs.length);
+      a.classList.toggle('part', any > 0 && ok < qs.length);
+    });
+    var ex = BANK.exam || [];
+    var first = ex.filter(function (q) { return state.ans[q.id] && state.ans[q.id].first; }).length;
+    var answered = ex.filter(function (q) { return state.ans[q.id]; }).length;
+    var sc = $('#exam-score');
+    if (sc) sc.textContent = answered ? (first + ' of ' + ex.length + ' correct on the first try' +
+      (answered === ex.length ? (first >= 10 ? '. Passed.' : '. Review the modules behind the misses and try the checks again.') : '')) : '';
+  }
+
+  // ---------------------------------------------------------------- quizzes
+  function renderQuestion(q, n) {
+    var wrap = h('div', { cls: 'qi', id: 'q-' + q.id });
+    var tag = q.t === 's' ? '<span class="tag s qt">Security</span>' : '<span class="tag f qt">Functional</span>';
+    wrap.appendChild(h('p', { cls: 'qp' }, '<span>' + n + '. ' + esc(q.q) + '</span>' + tag));
+    var opts = h('div', { cls: 'qo' });
+    var fb = h('div', { 'aria-live': 'polite' });
+    q.o.forEach(function (o, i) {
+      var b = h('button', { type: 'button' }, esc(o));
+      b.addEventListener('click', function () { answer(q, i, opts, fb); });
+      opts.appendChild(b);
+    });
+    wrap.appendChild(opts); wrap.appendChild(fb);
+    var st = state.ans[q.id];
+    if (st && st.ok) showResult(q, q.a, opts, fb, false);
+    return wrap;
+  }
+  function answer(q, i, opts, fb) {
+    var right = i === q.a;
+    if (!state.ans[q.id]) state.ans[q.id] = { first: right, ok: false };
+    if (right) state.ans[q.id].ok = true;
+    save(); updateProgress();
+    showResult(q, i, opts, fb, true);
+  }
+  function showResult(q, i, opts, fb) {
+    var right = i === q.a;
+    var bs = $$('button', opts);
+    bs.forEach(function (b, k) { b.disabled = true; b.classList.remove('right', 'wrong'); if (k === i) b.classList.add(right ? 'right' : 'wrong'); if (right && k === q.a) b.classList.add('right'); });
+    fb.innerHTML = '';
+    var e = h('p', { cls: 'qe' + (right ? '' : ' no') }, (right ? '<b>Correct.</b> ' + esc(q.e) : '<b>Not quite.</b> Think again about what the standard requires, then retry.') +
+      '<span class="ref">§ ' + esc(q.r) + '</span>');
+    fb.appendChild(e);
+    if (!right) {
+      var r = h('button', { type: 'button', cls: 'btn small retry' }, 'Try again');
+      r.addEventListener('click', function () { bs.forEach(function (b) { b.disabled = false; b.classList.remove('wrong'); }); fb.innerHTML = ''; bs[0].focus(); });
+      fb.appendChild(r);
+    }
+  }
+  $$('.quiz').forEach(function (qz) {
+    var qs = BANK[qz.dataset.quiz] || [];
+    var box = $('.qs', qz);
+    qs.forEach(function (q, k) { box.appendChild(renderQuestion(q, k + 1)); });
+  });
+  $('#reset-all').addEventListener('click', function () {
+    state = { ans: {} }; save();
+    $$('.quiz').forEach(function (qz) { var box = $('.qs', qz); box.innerHTML = ''; (BANK[qz.dataset.quiz] || []).forEach(function (q, k) { box.appendChild(renderQuestion(q, k + 1)); }); });
+    updateProgress();
+  });
+
+  // current-section marker in the rail
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting) $$('.toc a').forEach(function (a) { a.classList.toggle('cur', a.getAttribute('href') === '#' + e.target.id); });
+      });
+    }, { rootMargin: '-40% 0px -55% 0px' });
+    $$('.mod').forEach(function (s) { io.observe(s); });
+  }
+
+  // ---------------------------------------------------------------- frame bars
+  function frame(el, segs) {
+    el.innerHTML = '';
+    segs.forEach(function (s) {
+      var w = Math.max(5, Math.min(s.o, 40));
+      if (s.data) w = 48;
+      var d = h('div', { cls: 'fseg ' + (s.c || ''), style: 'flex:' + w + ' 1 0' }, '<b>' + esc(s.n) + '</b><i>' + esc(s.t || (s.o + ' oct')) + '</i>');
+      d.title = s.n;
+      el.appendChild(d);
+    });
+  }
+  (function () {
+    var on = $('#f1-on'), bar = $('#f1-bar'), note = $('#f1-note');
+    function draw() {
+      var segs = [{ n: 'Primary Header', o: 6, c: 'macp' }];
+      if (on.checked) segs.push({ n: 'Security Header', o: 14, c: 'sdls mac' });
+      segs.push({ n: 'Frame Data Field', o: 0, data: 1, t: on.checked ? 'encrypted + MAC' : 'user data', c: on.checked ? 'enc mac' : '' });
+      if (on.checked) segs.push({ n: 'Security Trailer', o: 16, c: 'sdls' });
+      segs.push({ n: 'OCF', o: 4, c: 'never' }, { n: 'FECF', o: 2, c: 'never' });
+      frame(bar, segs);
+      note.textContent = on.checked ? 'TM frame with the GCM baseline: 14 octets of header and 16 of trailer now share the fixed frame length with your data. Header formats are unchanged.'
+        : 'Plain TM frame: the data field holds user data in clear, with nothing proving who sent it or whether it is fresh.';
+    }
+    on.addEventListener('change', draw); draw();
+  })();
+
+  // ---------------------------------------------------------------- builder
+  (function () {
+    var P = $('#b-proto'), S = $('#b-svc'), IV = $('#b-iv'), SN = $('#b-sn'), PL = $('#b-pl'), MAC = $('#b-mac');
+    var bar = $('#b-bar'), msgs = $('#b-msgs');
+    function v(x) { var n = parseInt(x.value, 10); return isNaN(n) ? 0 : n; }
+    function draw() {
+      var p = P.value, s = S.value, iv = v(IV), sn = v(SN), pl = v(PL), mac = v(MAC);
+      var auth = s !== 'enc', enc = s !== 'auth';
+      var hdr = 2 + iv + sn + pl;
+      var out = [];
+      function m(k, t) { out.push('<li class="' + k + '">' + t + '</li>'); }
+      if (iv !== 0 && (iv < 1 || iv > 32)) m('bad', 'IV must be 0 or 1–32 octets.');
+      if (sn !== 0 && (sn < 2 || sn > 8)) m('bad', 'Sequence Number must be 0 or 2–8 octets.');
+      if (pl < 0 || pl > 2) m('bad', 'Pad Length must be 0–2 octets.');
+      if (hdr > 64) m('bad', 'Security Header is ' + hdr + ' octets; the maximum is 64.');
+      if (auth) {
+        if (mac < 8 || mac > 64) m('bad', 'Authentication needs a MAC of 8–64 octets in the Security Trailer.');
+        if (sn === 0 && iv === 0) m('bad', 'Authentication needs an anti-replay sequence number: give SN 2–8 octets, or use a counter IV.');
+        else if (sn === 0 && s === 'ae') m('ok', 'The IV doubles as the sequence number (counter-mode IV), so the SN field is 0 octets.');
+        else if (sn === 0) m('info', 'IV-as-sequence-number is meant for counter-mode authenticated encryption; for authentication only, carry an SN field.');
+      } else {
+        if (sn > 0) m('bad', 'Encryption-only SAs have no sequence number: SN must be 0 octets.');
+        if (mac > 0) m('info', 'Encryption-only SAs compute no MAC; set MAC to 0 and drop the trailer.');
+        m('info', 'Warning from the standard: encryption without authentication allows undetected substitution.');
+      }
+      if (enc && iv === 0) m('info', 'Most encryption modes need an IV; 0 octets only if the algorithm needs none.');
+      if (!enc && iv > 0) m('info', 'No encryption: an IV is only needed if the MAC algorithm uses one.');
+      if (out.filter(function (x) { return x.indexOf('bad') > -1; }).length === 0) m('ok', 'Valid configuration. Overhead: ' + hdr + ' + ' + (auth ? mac : 0) + ' = ' + (hdr + (auth ? mac : 0)) + ' octets per frame.');
+      msgs.innerHTML = out.join('');
+      var segs = [];
+      var phl = { TM: 6, TC: 5, AOS: 6, USLP: 7 }[p];
+      segs.push({ n: 'Primary Header', o: phl, c: auth ? 'macp' : '', t: p === 'USLP' ? '4–14 oct' : phl + ' oct' });
+      if (p === 'TC') segs.push({ n: 'Segment Hdr', o: 1, c: auth ? 'mac' : '', t: 'optional' });
+      if (p === 'AOS' || p === 'USLP') segs.push({ n: 'Insert Zone', o: 4, c: 'never', t: 'optional' });
+      segs.push({ n: 'SPI', o: 2, c: 'sdls' + (auth ? ' mac' : '') });
+      if (iv) segs.push({ n: 'IV', o: iv, c: 'sdls' });
+      if (sn) segs.push({ n: 'SN', o: sn, c: 'sdls' + (auth ? ' mac' : '') });
+      if (pl) segs.push({ n: 'Pad Len', o: pl, c: 'sdls' + (auth ? ' mac' : '') });
+      segs.push({ n: 'Frame Data Field', o: 0, data: 1, t: enc ? 'encrypted' : 'clear', c: (enc ? 'enc ' : '') + (auth ? 'mac' : '') });
+      if (auth && mac) segs.push({ n: 'MAC', o: mac, c: 'sdls never' });
+      if (p !== 'TC') segs.push({ n: 'OCF', o: 4, c: 'never', t: 'optional' });
+      segs.push({ n: 'FECF', o: 2, c: 'never', t: p === 'USLP' ? '2 or 4' : 'optional' });
+      frame(bar, segs);
+    }
+    [P, S, IV, SN, PL, MAC].forEach(function (x) { x.addEventListener('input', draw); x.addEventListener('change', draw); });
+    $('#b-base').addEventListener('click', function () {
+      if (P.value === 'TC') { S.value = 'auth'; IV.value = 0; SN.value = 4; PL.value = 0; MAC.value = 16; }
+      else { S.value = 'ae'; IV.value = 12; SN.value = 0; PL.value = 0; MAC.value = 16; }
+      draw();
+    });
+    draw();
+  })();
+
+  // ---------------------------------------------------------------- SA database
+  (function () {
+    var SA = [
+      { spi: 1, dir: 'Uplink', ch: 'TC · VC 0', st: 'Active', svc: 'Authentication', alg: 'AES-256-CMAC', key: 'key index K-07', len: 'IV 0 · SN 4 · PL 0 · MAC 16', mask: 'default', win: '32', why: 'Commands need authenticity and freshness more than secrecy, so this follows the TC baseline.' },
+      { spi: 5, dir: 'Uplink', ch: 'TC · VC 0', st: 'Keyed, standby', svc: 'Authentication', alg: 'AES-256-CMAC', key: 'key index K-08', len: 'IV 0 · SN 4 · PL 0 · MAC 16', mask: 'default + Spacecraft ID', win: '32', why: 'Prepared for a key change. It cannot be active on VC 0 while SPI 1 is: only one active SA per GVCID at the sender.' },
+      { spi: 2, dir: 'Downlink', ch: 'AOS · VC 1 science', st: 'Active', svc: 'Authenticated encryption', alg: 'AES-256-GCM', key: 'key index K-11', len: 'IV 12 · SN 0 · PL 0 · MAC 16', mask: 'default', win: '1024', why: 'Science data is confidential and must be authentic. The 96-bit counter IV doubles as the sequence number; a large window tolerates downlink gaps.' },
+      { spi: 3, dir: 'Downlink', ch: 'AOS · VC 2 housekeeping', st: 'Active', svc: 'Authenticated encryption', alg: 'AES-256-GCM', key: 'key index K-12', len: 'IV 12 · SN 0 · PL 0 · MAC 16', mask: 'default', win: '1024', why: 'A separate SA per channel limits what one key protects and keeps counters independent.' },
+      { spi: 6, dir: 'Downlink', ch: 'AOS · VC 63 idle', st: 'Not allowed', svc: '—', alg: '—', key: '—', len: '—', mask: '—', win: '—', bad: 1, why: 'Rejected: SAs are not created for virtual channels carrying Only Idle Data frames (4.2.2.2.3).' }
+    ];
+    var list = $('#sim-sadb .sa-list'), det = $('#sim-sadb .sa-detail');
+    function show(k) {
+      $$('button', list).forEach(function (b, i) { b.setAttribute('aria-selected', i === k ? 'true' : 'false'); });
+      var s = SA[k];
+      det.innerHTML = '<dl>' +
+        [['SPI', s.spi], ['Direction', s.dir + ' (simplex)'], ['Bound to', s.ch], ['State', s.st], ['Service type', s.svc], ['Algorithm', s.alg], ['Key', s.key], ['Field lengths', s.len], ['Auth. mask', s.mask], ['SN window', s.win]]
+          .map(function (r) { return '<dt>' + r[0] + '</dt><dd>' + esc(r[1]) + '</dd>'; }).join('') +
+        '</dl><p class="why">' + esc(s.why) + '</p>';
+    }
+    SA.forEach(function (s, k) {
+      var b = h('button', { type: 'button', role: 'tab' }, 'SPI ' + s.spi + '<span>' + esc(s.ch) + (s.bad ? ' ✕' : '') + '</span>');
+      b.addEventListener('click', function () { show(k); });
+      list.appendChild(b);
+    });
+    show(0);
+  })();
+
+  // ---------------------------------------------------------------- ApplySecurity stepper
+  (function () {
+    var svgEl = $('#sim-apply').previousElementSibling.querySelector('svg');
+    var svc = 'ae', step = 0;
+    var T = {
+      0: function () { return 'The link protocol hands over the partial frame, Primary Header through Frame Data Field, with an empty Security Header. SDLS selects the SA from the GVCID (and GMAP_ID).'; },
+      1: function () { return 'Encrypt the Frame Data Field with the SA\'s algorithm and IV. If the mode needs fill, record the number of pad bytes in Pad Length.'; },
+      2: function (s) { return s === 'enc' ? 'Write the SPI, IV and Pad Length. There is no sequence number: encryption-only SAs have none.' : 'Increment the managed sequence number by one and place it in the Sequence Number field, or let the counter IV carry it. Add SPI and IV: the Security Header is complete, and it will be inside the MAC.'; },
+      3: function () { return 'AND the frame with the SA\'s authentication bit mask. Masked bits become zero. The result is the Authentication Payload.'; },
+      4: function () { return 'Compute the MAC over the Authentication Payload, drop least-significant bits down to the MAC length, and place it in the Security Trailer.'; },
+      5: function (s) { return { ae: 'Return Security Header + encrypted data + Security Trailer. The link protocol then completes the frame: OCF, counters, FECF.', auth: 'Return Security Header + clear data + Security Trailer. The data is readable but tamper-evident.', enc: 'Return Security Header + encrypted data. No trailer: nothing proves who sent it.' }[s]; }
+    };
+    var USE = { ae: [0, 1, 2, 3, 4, 5], auth: [0, 2, 3, 4, 5], enc: [0, 1, 2, 5] };
+    function draw() {
+      var seq = USE[svc];
+      if (step >= seq.length) step = seq.length - 1;
+      svgEl.classList.add('tracing');
+      $$('.hl', svgEl).forEach(function (n) { n.classList.remove('hot'); });
+      for (var i = 0; i <= step; i++) {
+        var id = seq[i];
+        var n = svgEl.querySelector('#ap-n' + id); if (n) n.classList.add('hot');
+        if (i > 0) for (var a = seq[i - 1]; a < id; a++) { var ar = svgEl.querySelector('#ap-a' + a); if (ar) ar.classList.add('hot'); }
+      }
+      $('#ap-no').textContent = 'Step ' + (step + 1) + ' of ' + seq.length;
+      $('#ap-text').textContent = T[seq[step]](svc);
+    }
+    $$('#sim-apply [data-svc]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        svc = b.dataset.svc; step = 0;
+        $$('#sim-apply [data-svc]').forEach(function (x) { x.classList.toggle('on', x === b); });
+        draw();
+      });
+    });
+    $('#ap-next').addEventListener('click', function () { step = Math.min(step + 1, USE[svc].length - 1); draw(); });
+    $('#ap-prev').addEventListener('click', function () { step = Math.max(step - 1, 0); draw(); });
+    draw();
+  })();
+
+  // ---------------------------------------------------------------- ProcessSecurity scenarios
+  (function () {
+    var svgEl = $('#sim-process').previousElementSibling.querySelector('svg');
+    var base = ['pr-n0', 'pr-a0', 'pr-d1'];
+    var SC = {
+      ok: { p: base.concat(['pr-a1', 'pr-d2', 'pr-a2', 'pr-d3', 'pr-a3', 'pr-n4', 'pr-a4', 'pr-n5', 'pr-a5', 'pr-n6']), k: 'ok', c: 'No failure', w: 'SPI matches the channel, MAC verifies, SN is above the stored value and inside the window. The receiver stores the new SN, decrypts, removes padding and returns the data.' },
+      spi: { p: base.concat(['pr-x1', 'pr-f1']), k: 'bad', c: 'Invalid SPI', w: 'The SPI names an SA that is not associated with this GVCID / GMAP_ID. The frame is discarded and an exception reported, before any cryptography runs.' },
+      mac: { p: base.concat(['pr-a1', 'pr-d2', 'pr-x2', 'pr-f2']), k: 'bad', c: 'MAC verification failure', w: 'One flipped bit in an authenticated field changes the MAC. The frame is discarded without decryption and may be archived for forensics.' },
+      replay: { p: base.concat(['pr-a1', 'pr-d2', 'pr-a2', 'pr-d3', 'pr-x3', 'pr-f3']), k: 'bad', c: 'Anti-replay sequence number failure', w: 'The MAC is valid because this is a genuine old frame, but its SN is lower than or equal to the stored value. Discarded; the stored SN is unchanged.' },
+      ahead: { p: base.concat(['pr-a1', 'pr-d2', 'pr-a2', 'pr-d3', 'pr-x3', 'pr-f3']), k: 'bad', c: 'Anti-replay sequence number failure', w: 'A genuine frame whose SN is more than the window above the stored value, for example after a long outage. Discarded and the stored SN is not moved, so the link stays rejected until resynchronised.' }
+    };
+    $$('#sim-process [data-sc]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var s = SC[b.dataset.sc];
+        $$('#sim-process [data-sc]').forEach(function (x) { x.classList.toggle('on', x === b); });
+        svgEl.classList.add('tracing');
+        $$('.hl', svgEl).forEach(function (n) { n.classList.toggle('hot', s.p.indexOf(n.id) > -1); });
+        var st = $('#pr-status');
+        st.className = 'status ' + s.k;
+        st.innerHTML = '<span class="code">Status: ' + esc(s.c) + '</span><span class="why">' + esc(s.w) + '</span>';
+      });
+    });
+  })();
+
+  // ---------------------------------------------------------------- authentication mask
+  (function () {
+    function F(n, st, lock, why) { return { n: n, st: st, lock: lock, why: why }; }
+    var cfg = 'Not mandated. Zero (excluded) by default; a mission may include it (4.2.2.6.2 j).';
+    var SH = F('Security Header: SPI, SN, PL', 'on', 1, 'Always all ones, except the IV (4.2.2.6.2 h). The sequence number is therefore authenticated.');
+    var IV = F('IV', 'off', 0, 'Not mandated by the mask. AEAD modes such as GCM take the IV as an input, so a changed IV breaks the tag anyway.');
+    var DATA = F('Frame Data Field', 'on', 1, 'Always all ones (4.2.2.6.2 i). With authenticated encryption, the MAC covers the ciphertext.');
+    var MAC = F('MAC', 'never', 1, 'The MAC cannot cover itself.');
+    var OCF = F('OCF', 'never', 1, 'Always excluded (2.3.2.2). It carries the CLCW / PLCW, which is therefore unauthenticated.');
+    var FECF = F('FECF', 'never', 1, 'Always excluded: added after security processing for error detection.');
+    var IZ = F('Insert Zone', 'never', 1, 'Always zero (4.2.2.6.2 g). The Insert Service is unprotected.');
+    var VCID = F('Virtual Channel ID', 'on', 1, 'Always all ones (4.2.2.6.2 b). A frame cannot be moved to another virtual channel without failing the MAC.');
+    var SCID = F('Spacecraft ID', 'off', 0, 'Excluded by default. Include it if a frame must not be re-targeted to another spacecraft sharing the key (note 1 to 4.2.2.6.2).');
+    var DEF = {
+      TM: [F('Version', 'off', 0, cfg), SCID, VCID, F('OCF flag', 'off', 0, cfg),
+        F('MC Frame Count', 'off', 1, 'Always zero for TM (4.2.2.6.2 d). It is set when virtual channels are multiplexed onto the master channel, after ApplySecurity.'),
+        F('VC Frame Count', 'off', 0, cfg), F('Data Field Status', 'off', 0, cfg),
+        F('Frame Secondary Header', 'off', 0, 'VC_FSH may be authenticated by mission choice but is never encrypted. If the MC_FSH service is used, it stays excluded (note 2).'),
+        SH, IV, DATA, MAC, OCF, FECF],
+      TC: [F('Version', 'off', 0, cfg), F('Bypass flag', 'off', 0, cfg + ' Worth reviewing: it selects sequence-controlled or expedited handling.'), F('Control Command flag', 'off', 0, cfg),
+        SCID, VCID, F('Frame Length', 'off', 0, cfg), F('Frame Sequence Number', 'off', 0, cfg),
+        F('Segment Header', 'on', 1, 'Always all ones for TC (4.2.2.6.2 f), so the MAP ID is authenticated.'), SH, IV, DATA, MAC, FECF],
+      AOS: [F('Version', 'off', 0, cfg), SCID, VCID, F('VC Frame Count', 'off', 0, cfg), F('Signaling Field', 'off', 0, cfg),
+        F('Frame Header Error Control', 'off', 1, 'Always zero for AOS (4.2.2.6.2 e).'), IZ, SH, IV, DATA, MAC, OCF, FECF],
+      USLP: [F('Version', 'off', 0, cfg), SCID, F('Source / Destination flag', 'off', 0, cfg), VCID,
+        F('MAP ID', 'on', 1, 'Always all ones for USLP (4.2.2.6.2 c).'), F('End of Primary Header flag', 'off', 0, cfg), F('Frame Length', 'off', 0, cfg),
+        F('Other primary header fields', 'off', 0, cfg + ' Covers bypass, protocol control, OCF flag and VC frame count.'), IZ, SH, IV, DATA, MAC, OCF, FECF]
+    };
+    var cur, sel = -1;
+    var row = $('#mk-row'), info = $('#mk-info'), P = $('#mk-proto');
+    function load() { cur = DEF[P.value].map(function (f) { return Object.assign({}, f); }); sel = -1; draw(); info.textContent = 'Select a field to see its rule. Unlocked fields toggle between in and out of the MAC.'; }
+    function draw() {
+      row.innerHTML = '';
+      cur.forEach(function (f, i) {
+        var lab = f.st === 'on' ? 'mask 1' : f.st === 'off' ? 'mask 0' : 'excluded';
+        var b = h('button', { type: 'button', cls: 'mf ' + f.st + (f.lock ? ' lock' : '') + (i === sel ? ' sel' : ''), 'aria-pressed': f.st === 'on' ? 'true' : 'false' }, esc(f.n) + '<small>' + lab + '</small>');
+        b.addEventListener('click', function () {
+          sel = i;
+          if (!f.lock && f.st !== 'never') f.st = f.st === 'on' ? 'off' : 'on';
+          var inMac = cur.filter(function (x) { return x.st === 'on'; }).map(function (x) { return x.n; });
+          info.innerHTML = '<b>' + esc(f.n) + '.</b> ' + esc(f.why) + (f.lock ? '' : ' <i>(toggled)</i>') + '<br><span class="note">MAC now covers: ' + esc(inMac.join(', ')) + '.</span>';
+          draw();
+          var nb = row.children[i]; if (nb) nb.focus();
+        });
+        row.appendChild(b);
+      });
+    }
+    P.addEventListener('change', load); $('#mk-reset').addEventListener('click', load); load();
+  })();
+
+  // ---------------------------------------------------------------- replay window
+  (function () {
+    var W = $('#rp-w'), tx, rx, sent, log = $('#rp-log');
+    function reset() { tx = 1; rx = 0; sent = []; log.innerHTML = ''; draw(); }
+    function w() { var n = parseInt(W.value, 10); return n > 0 ? n : 1; }
+    function note(k, tag, t) { var li = h('li', { cls: k }, '<span class="k">' + tag + '</span><span>' + t + '</span>'); log.appendChild(li); }
+    function receive(sn, how) {
+      if (sn <= rx) { note('bad', 'REJECT', how + ' SN ' + sn + ' ≤ stored ' + rx + ': replay. Stored SN unchanged.'); }
+      else if (sn > rx + w()) { note('bad', 'REJECT', how + ' SN ' + sn + ' > ' + rx + ' + ' + w() + ': outside the window. Stored SN unchanged.'); }
+      else { note('ok', 'ACCEPT', how + ' SN ' + sn + ' is in ' + (rx + 1) + '–' + (rx + w()) + '. Stored SN → ' + sn + '.'); rx = sn; }
+      draw();
+    }
+    function draw() {
+      $('#rp-tx').textContent = tx; $('#rp-rx').textContent = rx; $('#rp-rng').textContent = (rx + 1) + '–' + (rx + w());
+      var line = $('#rp-line'); line.innerHTML = '';
+      var lo = Math.max(0, rx - 4), hi = Math.max(rx + w() + 4, tx + 2);
+      for (var i = lo; i <= hi && i - lo < 60; i++) {
+        var c = 'nc' + (i < rx ? ' used' : '') + (i === rx ? ' stored' : '') + (i > rx && i <= rx + w() ? ' win' : '') + (i === tx ? ' tx' : '');
+        line.appendChild(h('span', { cls: c, title: i === tx ? 'next SN the sender will use' : '' }, String(i)));
+      }
+    }
+    $('#rp-send').addEventListener('click', function () { var sn = tx++; sent.push(sn); receive(sn, 'Genuine frame'); });
+    $('#rp-lose').addEventListener('click', function () { var a = tx; tx += 3; note('lost', 'LOST', 'Frames ' + a + '–' + (tx - 1) + ' never reached the receiver.'); draw(); });
+    $('#rp-replay').addEventListener('click', function () {
+      if (!sent.length) { note('lost', 'NOTHING', 'Send a frame first so the attacker has something to capture.'); return; }
+      receive(sent[sent.length - 1], 'Replayed copy of');
+    });
+    $('#rp-ahead').addEventListener('click', function () { receive(rx + w() + 10, 'Frame with valid MAC,'); });
+    $('#rp-reset').addEventListener('click', reset);
+    W.addEventListener('input', draw);
+    reset();
+  })();
+
+  // ---------------------------------------------------------------- coverage table
+  (function () {
+    var D = {
+      TM: [['Packet (VCP)', 'p', 'p', 'p'], ['VC Access', 'p', 'p', 'p'], ['VC Frame Secondary Header', 'p', 'n', 'a'], ['VC OCF', 'n', 'n', 'n'], ['VC Frame (external)', 'n', 'n', 'n'], ['MC Frame Secondary Header', 'n', 'n', 'n'], ['MC OCF', 'n', 'n', 'n'], ['MC Frame (external)', 'n', 'n', 'n']],
+      TC: [['MAP Packet', 'p', 'p', 'p'], ['MAP Access', 'p', 'p', 'p'], ['VC Packet', 'p', 'p', 'p'], ['VC Access', 'p', 'p', 'p'], ['COP Management', 'n', 'n', 'n'], ['VC Frame (external)', 'n', 'n', 'n'], ['MC Frame (external)', 'n', 'n', 'n']],
+      AOS: [['Packet', 'p', 'p', 'p'], ['Bitstream', 'p', 'p', 'p'], ['VC Access', 'p', 'p', 'p'], ['VC OCF', 'n', 'n', 'n'], ['VC Frame (external)', 'n', 'n', 'n'], ['MC Frame (external)', 'n', 'n', 'n'], ['Insert', 'n', 'n', 'n']],
+      USLP: [['MAP Packet', 'p', 'p', 'p'], ['MAP Access', 'p', 'p', 'p'], ['MAP Octet Stream', 'p', 'p', 'p'], ['MC OCF', 'n', 'n', 'n'], ['VC Frame (external)', 'n', 'n', 'n'], ['MC Frame (external)', 'n', 'n', 'n'], ['Insert', 'n', 'n', 'n'], ['COPs Management', 'n', 'n', 'n']]
+    };
+    var L = { p: '<span class="chip p">Protected</span>', n: '<span class="chip n">Not protected</span>', a: '<span class="chip a">Authentication only</span>' };
+    var NOTE = { TM: 'Encryption covers the data field only; VC_FSH can join the MAC but is never encrypted.', TC: 'Each SA serves exactly one VC. COP-1 control frames are unprotected.', AOS: 'The Insert Zone is always masked out.', USLP: 'With COPs in use, each SA serves one VC. COP-1 / COP-P control is unprotected.' };
+    function show(p) {
+      $$('#sim-cover [data-p]').forEach(function (b) { b.classList.toggle('on', b.dataset.p === p); b.setAttribute('aria-selected', b.dataset.p === p ? 'true' : 'false'); });
+      $('#cv-tbl').innerHTML = '<table><thead><tr><th>' + p + ' service</th><th>Authentication</th><th>Encryption</th><th>Auth. encryption</th></tr></thead><tbody>' +
+        D[p].map(function (r) { return '<tr><td>' + esc(r[0]) + '</td><td>' + L[r[1]] + '</td><td>' + L[r[2]] + '</td><td>' + L[r[3]] + '</td></tr>'; }).join('') +
+        '</tbody></table><p class="note">' + esc(NOTE[p]) + ' Source: table 5-1.</p>';
+    }
+    $$('#sim-cover [data-p]').forEach(function (b) { b.setAttribute('role', 'tab'); b.addEventListener('click', function () { show(b.dataset.p); }); });
+    show('TM');
+  })();
+
+  // ---------------------------------------------------------------- overhead
+  (function () {
+    var B = $('#ov-b'), N = $('#ov-n'), out = $('#ov-out');
+    function draw() {
+      var hd = B.value === 'gcm' ? 14 : 6, tr = 16, n = parseInt(N.value, 10) || 0, x = hd + tr;
+      if (n <= x) { out.innerHTML = 'A data field of ' + n + ' octets cannot hold the <b>' + x + '</b> octets of SDLS overhead.'; return; }
+      out.innerHTML = 'SDLS adds <b>' + x + '</b> octets (header ' + hd + ' + trailer ' + tr + '). Of ' + n + ' octets, <b>' + (n - x) + '</b> remain for user data: <b>' + (x / n * 100).toFixed(1) + '%</b> overhead.';
+    }
+    B.addEventListener('change', draw); N.addEventListener('input', draw); draw();
+  })();
+
+  // ---------------------------------------------------------------- PICS builder
+  (function () {
+    var boxes = $$('#sim-pics input'), out = $('#pc-out');
+    function draw() {
+      var p = boxes.filter(function (b) { return b.dataset.p && b.checked; }).map(function (b) { return b.dataset.p; });
+      var s = boxes.filter(function (b) { return b.dataset.s && b.checked; }).map(function (b) { return b.dataset.s; });
+      var auth = s.indexOf('auth') > -1 || s.indexOf('ae') > -1, enc = s.indexOf('enc') > -1 || s.indexOf('ae') > -1;
+      var issues = [];
+      if (!p.length) issues.push('O.1 not met: support at least one link protocol.');
+      if (!s.length) issues.push('O.2 not met: support at least one security service.');
+      var mand = ['GVCID', 'SPI', 'SA_service_type', 'SA_length_SN, _IV, _PL, _MAC', 'ApplySecurity (sender) / ProcessSecurity (receiver)', 'Discard and report frames with the wrong SA'];
+      if (p.indexOf('TC') > -1) mand.push('GMAP_ID (C.1, because TC is supported)');
+      if (auth) mand.push('Authentication algorithm, key, mask, sequence number, window (C.2)', 'Increment SN, apply mask, compute and place MAC; verify MAC and SN, update SN (C.2)');
+      if (enc) mand.push('Encryption algorithm and key (C.3)', 'Initialization vector (C.4)', 'Encrypt and decrypt frame data (C.3)');
+      if (s.indexOf('ae') > -1) mand.push('AEAD plaintext / AAD split (C.8)');
+      var opt = ['Truncate MAC', 'Put pad length in header', 'Archive rejected frames'];
+      if (!enc) opt.push('Initialization vector (C.4 optional without encryption)');
+      out.innerHTML = (issues.length ? '<p class="verdict bad">Not conformant yet.</p><ul>' + issues.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>'
+        : '<p class="verdict ok">Conformance possible with these choices.</p>') +
+        '<p class="mono" style="margin-top:10px">Mandatory</p><ul>' + mand.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' +
+        '<p class="mono" style="margin-top:10px">Optional</p><ul>' + opt.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>';
+    }
+    boxes.forEach(function (b) { b.addEventListener('change', draw); });
+    draw();
+  })();
+
+  updateProgress();
+})();
+
+</script>
+</body>
+</html>
